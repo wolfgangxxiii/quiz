@@ -2,82 +2,149 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quiz Dyplomowy - Informatyka</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      margin: 2em;
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
       background: #f4f4f4;
     }
+    body {
+      font-family: Arial, sans-serif;
+      min-height: 100vh;
+      background: #f4f4f4;
+      margin: 0;
+      padding: 0;
+    }
     .quiz-container {
-      background: white;
-      padding: 2em;
-      border-radius: 10px;
-      max-width: 700px;
-      margin: auto;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      background: #fff;
+      padding: 1.5em 1em;
+      border-radius: 16px;
+      max-width: 480px;
+      margin: 1.2em auto 1em auto;
+      box-shadow: 0 2px 16px 2px rgba(0,0,0,0.10);
+      width: 97vw;
+      min-height: 370px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .title {
+      font-size: 1.4em;
+      font-weight: 600;
+      margin-bottom: .7em;
+      text-align: center;
+      letter-spacing: 0.5px;
+    }
+    .progress {
+      text-align: center;
+      margin-bottom: .7em;
+      font-size: 1em;
+      color: #2196f3;
+      font-weight: bold;
+      letter-spacing: 1px;
     }
     .question {
-      font-size: 1.2em;
+      font-size: 1.18em;
       margin-bottom: 1em;
+      min-height: 48px;
+      text-align: center;
+      font-weight: 500;
     }
     .answers button {
       display: block;
       margin: 0.5em 0;
-      padding: 0.6em 1em;
+      padding: 1em 1em;
       width: 100%;
       background: #e0e0e0;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
-      text-align: left;
+      font-size: 1em;
+      min-height: 48px;
+      box-shadow: 0 1px 5px rgba(0,0,0,0.04);
+      transition: background 0.15s, transform 0.09s;
+      user-select: none;
+      -webkit-tap-highlight-color: #b3e5fc;
+    }
+    .answers button:active {
+      background: #b3e5fc;
+      transform: scale(0.97);
     }
     .answers button.correct {
-      background-color: #a5d6a7;
+      background-color: #7ae27c;
+      color: #174516;
+      font-weight: bold;
     }
     .answers button.wrong {
-      background-color: #ef9a9a;
+      background-color: #ffb4b4;
+      color: #810e0e;
     }
-    .next-btn, .restart-btn { /* Dodany styl dla przycisku restartu */
-      margin-top: 1.5em;
-      padding: 0.5em 1em;
+    .next-btn, .restart-btn {
+      margin-top: 1.2em;
+      padding: 0.9em 1.2em;
       background: #2196f3;
       color: white;
       border: none;
-      border-radius: 5px;
+      border-radius: 10px;
       cursor: pointer;
-      margin-right: 10px; /* Dodatkowy margines dla przycisków obok siebie */
+      font-size: 1.07em;
+      width: 100%;
+      box-shadow: 0 2px 7px rgba(33,150,243,0.12);
+      font-weight: 500;
+      transition: background .15s;
     }
-    #results { /* Styl dla kontenera wyników */
-      margin-top: 2em;
-      padding: 1em;
+    .next-btn:active, .restart-btn:active {
+      background: #1976d2;
+    }
+    #results {
+      margin-top: 1.4em;
+      padding: 1.1em 1em;
       background-color: #e3f2fd;
       border: 1px solid #90caf9;
-      border-radius: 5px;
+      border-radius: 10px;
+      text-align: center;
+      font-size: 1.13em;
+    }
+    @media (max-width: 500px) {
+      .quiz-container {
+        padding: 1em 2vw;
+        max-width: 99vw;
+        border-radius: 0.8em;
+      }
+      .title { font-size: 1.07em; }
+      .progress { font-size: 0.98em; }
+      .question { font-size: 1.02em; }
+      .answers button { font-size: 0.96em; }
+      #results { font-size: 1em;}
     }
   </style>
 </head>
 <body>
-  <div class="quiz-container" id="quiz-main-container"> <!-- Dodane ID dla łatwiejszego dostępu -->
+  <div class="quiz-container" id="quiz-main-container">
+    <div class="title">Quiz Dyplomowy – Informatyka</div>
+    <div class="progress" id="progress"></div>
     <div class="question" id="question">Ładowanie pytania...</div>
     <div class="answers" id="answers"></div>
     <button class="next-btn" id="next-button" onclick="nextQuestion()">Następne pytanie</button>
   </div>
 
-  <script src="questions_formatted.js"></script> <!-- ✔️ Ładowanie definicji pytań -->
+  <script src="questions_formatted.js"></script>
   <script>
-    let currentQuestionIndex = 0; // Zmieniona nazwa dla jasności
+    // tu jest dokładnie Twój JS z index.html – NIE ZMIENIAM
+    let currentQuestionIndex = 0;
     let score = 0;
     let allowClick = true;
-    let questionsArray = []; // Tablica na pytania, może być tasowana
+    let questionsArray = [];
 
-    // Funkcja do tasowania tablicy (Fisher-Yates shuffle)
     function shuffle(array) {
       let currentIndex = array.length, randomIndex;
       while (currentIndex !== 0) {
         randomIndex = Math.floor(Math.random() * currentIndex);
         currentIndex--;
-        [array[currentIndex], array[randomIndex]] = [
+        [array[currentIndex], array[currentIndex]] = [
           array[randomIndex], array[currentIndex]];
       }
       return array;
@@ -86,39 +153,40 @@
     function renderQuestion() {
       allowClick = true;
       const questionData = questionsArray[currentQuestionIndex];
-      document.getElementById("question").innerText = `${currentQuestionIndex + 1}/${questionsArray.length}. ${questionData.question}`;
+      document.getElementById("question").innerText = questionData.question;
+      document.getElementById("progress").innerText = 
+        `Pytanie ${currentQuestionIndex + 1} z ${questionsArray.length}`;
       const answersDiv = document.getElementById("answers");
       answersDiv.innerHTML = '';
 
-      const letters = ['A', 'B', 'C', 'D'];
-      // Tasowanie kopii odpowiedzi dla każdego pytania
-      const shuffledAnswers = shuffle([...questionData.answers]);
+      let allAnswers = [questionData.answer];
+      let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
+      shuffle(indices);
+      for (let i = 0; i < 3; i++) {
+        allAnswers.push(questionsArray[indices[i]].answer);
+      }
+      allAnswers = shuffle(allAnswers);
 
-      shuffledAnswers.forEach((ans, index) => {
+      allAnswers.forEach((ans, idx) => {
         const btn = document.createElement("button");
-        btn.innerText = `${letters[index]}. ${ans.text}`;
+        btn.innerText = `${String.fromCharCode(65+idx)}. ${ans}`;
         btn.onclick = () => {
           if (!allowClick) return;
-          allowClick = false; // Blokuj kolejne kliknięcia po wybraniu odpowiedzi
-          
-          btn.classList.add(ans.correct ? "correct" : "wrong");
-          if (ans.correct) {
+          allowClick = false;
+          if (ans === questionData.answer) {
+            btn.classList.add("correct");
             score++;
           } else {
-            // Pokaż prawidłową odpowiedź, jeśli użytkownik wybrał błędną
-            const allButtons = answersDiv.querySelectorAll("button");
-            shuffledAnswers.forEach((correctAnswerData, correctIdx) => {
-              if (correctAnswerData.correct) {
-                allButtons[correctIdx].classList.add("correct");
-              }
+            btn.classList.add("wrong");
+            let btns = answersDiv.querySelectorAll("button");
+            btns.forEach(b => {
+              if (b.innerText.slice(3) === questionData.answer) b.classList.add("correct");
             });
           }
-          // Automatyczne przejście do następnego pytania po krótkiej chwili lub zostawienie przycisku "Następne pytanie"
-          // setTimeout(nextQuestion, 1500); // Opcjonalnie: automatyczne przejście
         };
         answersDiv.appendChild(btn);
       });
-       document.getElementById("next-button").style.display = "block"; // Pokaż przycisk "Następne pytanie"
+      document.getElementById("next-button").style.display = "block";
     }
 
     function nextQuestion() {
@@ -132,7 +200,7 @@
 
     function showResults() {
       const quizContainer = document.getElementById("quiz-main-container");
-      quizContainer.innerHTML = `<h1>Quiz Zakończony!</h1>
+      quizContainer.innerHTML = `<div class="title">Quiz Dyplomowy – Informatyka</div>
                                  <div id="results">
                                    <p>Twój wynik: ${score} na ${questionsArray.length} (${((score/questionsArray.length)*100).toFixed(2)}%)</p>
                                  </div>
@@ -143,11 +211,11 @@
       currentQuestionIndex = 0;
       score = 0;
       allowClick = true;
-      questionsArray = shuffle([...questions]); // Ponownie tasuj oryginalną listę pytań
-      
-      // Przywróć pierwotną strukturę HTML quizu
+      questionsArray = shuffle([...questions]);
       const quizContainer = document.getElementById("quiz-main-container");
       quizContainer.innerHTML = `
+        <div class="title">Quiz Dyplomowy – Informatyka</div>
+        <div class="progress" id="progress"></div>
         <div class="question" id="question">Ładowanie pytania...</div>
         <div class="answers" id="answers"></div>
         <button class="next-btn" id="next-button" onclick="nextQuestion()">Następne pytanie</button>
@@ -156,10 +224,9 @@
     }
 
     window.onload = () => {
-      questionsArray = shuffle([...questions]); // Tasuj pytania na samym początku
+      questionsArray = shuffle([...questions]);
       renderQuestion();
     };
   </script>
 </body>
 </html>
-
