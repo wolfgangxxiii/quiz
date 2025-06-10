@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Dyplomowy - Informatyka</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 2em;
+      background: #f4f4f4;
+    }
+    .quiz-container {
+      background: white;
+      padding: 2em;
+      border-radius: 10px;
+      max-width: 700px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    .question {
+      font-size: 1.2em;
+      margin-bottom: 1em;
+    }
+    .answers button {
+      display: block;
+      margin: 0.5em 0;
+      padding: 0.6em 1em;
+      width: 100%;
+      background: #e0e0e0;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+      text-align: left;
+    }
+    .answers button.correct {
+      background-color: #a5d6a7;
+    }
+    .answers button.wrong {
+      background-color: #ef9a9a;
+    }
+    .next-btn {
+      margin-top: 1.5em;
+      padding: 0.5em 1em;
+      background: #2196f3;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <div class="quiz-container">
+    <div class="question" id="question">Ładowanie pytania...</div>
+    <div class="answers" id="answers"></div>
+    <button class="next-btn" onclick="nextQuestion()">Następne pytanie</button>
+  </div>
+
+  <script src="questions_formatted.js"></script>
+  <script>
+    let currentQuestion = 0;
+    let allowClick = true;
+
+    function shuffle(array) {
+      return array.sort(() => Math.random() - 0.5);
+    }
+
+    function renderQuestion() {
+      allowClick = true;
+      const questionData = questions[currentQuestion];
+      document.getElementById("question").innerText = `${currentQuestion + 1}. ${questionData.question}`;
+      const answersDiv = document.getElementById("answers");
+      answersDiv.innerHTML = '';
+
+      const letters = ['A', 'B', 'C', 'D'];
+      questionData.answers.forEach((ans, index) => {
+        const btn = document.createElement("button");
+        btn.innerText = `${letters[index]}. ${ans.text}`;
+        btn.onclick = () => {
+          if (!allowClick) return;
+          allowClick = false;
+          btn.classList.add(ans.correct ? "correct" : "wrong");
+          if (!ans.correct) {
+            // Pokaż prawidłową odpowiedź
+            const buttons = document.querySelectorAll(".answers button");
+            questionData.answers.forEach((a, i) => {
+              if (a.correct) {
+                buttons[i].classList.add("correct");
+              }
+            });
+          }
+        };
+        answersDiv.appendChild(btn);
+      });
+    }
+
+    function nextQuestion() {
+      currentQuestion = (currentQuestion + 1) % questions.length;
+      renderQuestion();
+    }
+
+    window.onload = renderQuestion;
+  </script>
+</body>
+</html>
