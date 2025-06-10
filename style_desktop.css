@@ -15,31 +15,8 @@ body {
   margin: 0;
   padding: 20px;
   transition: background .3s;
-  /* display: flex;
-  justify-content: center;
-  align-items: center; */
+  /* NIE używamy flexa na body! */
 }
-
-.menu, .quiz-container, .flashcard-container, .range-container {
-  background: rgba(255,255,255,0.97);
-  padding: 2.5em 2em;
-  border-radius: 20px;
-  max-width: 650px;
-  margin: 2em auto;
-  box-shadow: 0 6px 40px 4px rgba(64,96,180,0.1), 0 0px 0px #fff;
-  width: 100%;
-  min-width: 500px;
-  /* min-height: 400px; */
-  max-height: 90vh;
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-start;
-  position: relative;
-  animation: fadein .5s;
-}
-
-
 
 @media (prefers-color-scheme: dark) {
   body {
@@ -48,15 +25,15 @@ body {
   }
 }
 
-/* Container styles - modified for desktop */
+/* Główne kontenery */
 .menu, .quiz-container, .flashcard-container, .range-container {
   background: rgba(255,255,255,0.97);
   padding: 2.5em 2em;
   border-radius: 20px;
-  max-width: 650px; /* Increased max-width for PC */
+  max-width: 650px;
   margin: 2em auto; 
   box-shadow: 0 6px 40px 4px rgba(64,96,180,0.1), 0 0px 0px #fff;
-  width: 100%; /* Allow it to take up available space up to max-width */
+  width: 100%;
   min-width: 500px; 
   min-height: 400px; 
   display: flex;
@@ -64,6 +41,7 @@ body {
   justify-content: flex-start;
   position: relative;
   animation: fadein .5s;
+  /* NIE używamy max-height, overflow-y: auto */
 }
 
 @keyframes fadein { 
@@ -182,7 +160,6 @@ body {
 }
 .next-btn, .restart-btn, .show-explanation-btn { margin-bottom: .5em; } /* Add some bottom margin */
 
-
 .flashcard-nav { display: flex; gap: 1em; margin-top: 1.2em; }
 .flashcard-nav button { flex: 1 1 0; margin: 0; background: linear-gradient(90deg,#24c6bc 60%, #43e97b 100%);}
 .flashcard-nav button[disabled] { opacity: 0.36; background: #c8d1d9; color: #888; cursor: not-allowed;}
@@ -201,10 +178,9 @@ body {
 }
 #results .next-btn { margin-top: 0.8em; } /* Specific adjustment for button in results */
 
-
 @media (prefers-color-scheme: dark) {
   #results { background: #222f4e; border-color:#314e7e; color:#b3eaff;}
-  .answers button { color: #e8fff6;} /* Removed .flashcard-answer as it has its own dark mode style */
+  .answers button { color: #e8fff6;}
   .answers button { background: linear-gradient(90deg,#3a4565 65%,#335c45 100%); border-color: #5ae5b2;}
   .answers button.correct { background: linear-gradient(92deg, #4fd773 80%, #234c34 100%); color: #e2ffe3; }
   .answers button.wrong { background: linear-gradient(92deg, #ff9a9a 80%, #5e2438 100%); color: #ffd6d6; }
@@ -251,10 +227,10 @@ body {
 }
 
 /* Styles for title inside range-container (from desktop.js innerHTML) */
-.range-container .title { /* Target .title specifically if it's used, or h3 if that's what's generated */
+.range-container .title {
   text-align: center;
-  font-size: 1.25em; /* Matched to .title for consistency */
-  font-weight: 600; /* Matched to .title for consistency */
+  font-size: 1.25em;
+  font-weight: 600;
   margin-bottom: 1em;
   color: #0d47a1; 
 }
