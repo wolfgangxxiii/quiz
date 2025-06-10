@@ -143,7 +143,7 @@ const questions = [
     "question": "W jaki sposób teoria prawdopodobieństwa jest używana w strukturach danych takich jak filtry Blooma i drzewa probabilistyczne?",
     "answer": "Teoria prawdopodobieństwa umożliwia budowanie struktur danych, które szybko sprawdzają przynależność elementu do zbioru, jak filtry Blooma w bazach danych (np. sprawdzanie czy email był już sprawdzany pod kątem spamu) oraz drzewa probabilistyczne, jak drzewo Huffmana do kompresji danych lub modele Markowa do przewidywania kolejnych znaków. Przykład: autokorekta w telefonach wykorzystuje modele Markowa."
   },
-   {
+ {
     "question": "Jakie są najlepsze praktyki w zakresie zarządzania danymi treningowymi, w tym ich gromadzenie, przechowywanie, przetwarzanie i zabezpieczanie, w kontekście budowy systemów sztucznej inteligencji?",
     "answer": "Najlepsze praktyki obejmują pozyskiwanie danych z legalnych i wiarygodnych źródeł, stosowanie redundantnych kopii zapasowych, szyfrowanie i anonimizację wrażliwych informacji, regularne czyszczenie i normalizację danych oraz ograniczenie dostępu wyłącznie do uprawnionych osób; przykładowo w rozwoju systemów rozpoznawania twarzy zdjęcia użytkowników powinny być przechowywane na bezpiecznych serwerach i poddawane anonimizacji."
   },
@@ -223,7 +223,7 @@ const questions = [
     "question": "Jakie są różnice i podobieństwa w sposobach deklaracji, definicji oraz wykorzystania zmiennych typów prostych w językach C, Java i C#?",
     "answer": "W każdym z tych języków zmienne deklaruje się podobnie, jednak w C możliwy jest bezpośredni dostęp do pamięci przez wskaźniki, a Java i C# wykorzystują garbage collector i dzielą zmienne na typy wartościowe oraz referencyjne; przykładowo w C: int liczba = 5;, w Java: int liczba = 5;, w C#: int liczba = 5; — ale tylko w C operujemy wskaźnikami."
   },
-  {
+ {
     "question": "W jaki sposób realizowana jest obsługa wyjątków w wybranym języku programowania i jakie są jej główne mechanizmy oraz najlepsze praktyki?",
     "answer": "Obsługa wyjątków polega na wychwytywaniu i zarządzaniu błędami w bloku try-catch (lub try-except w Pythonie), pozwalając na bezpieczne zakończenie programu lub wykonanie procedur naprawczych; najlepsze praktyki to obsługa konkretnych wyjątków, logowanie błędów, unikanie pustych bloków catch oraz zwalnianie zasobów w bloku finally. Przykład: w Javie obsługa wyjątku dzielenia przez zero zapobiega awarii aplikacji i umożliwia wyświetlenie komunikatu użytkownikowi."
   },
@@ -303,7 +303,7 @@ const questions = [
     "question": "Omów zasady budowy interfejsów użytkownika systemów informatycznych.",
     "answer": "Projektowanie interfejsu użytkownika powinno opierać się na zasadach czytelności, prostoty, intuicyjności i spójności wizualnej, aby użytkownik mógł bez problemu znaleźć potrzebne funkcje; przykładem jest umieszczenie przycisku 'Zapisz' w prawym dolnym rogu formularza i wyróżnienie go kolorem."
   },
-  {
+{
     "question": "Omów proces normalizacji baz i jej trzy postaci popierając przykładami.",
     "answer": "Normalizacja baz danych to proces eliminowania nadmiarowości i zapewniania integralności poprzez podział danych na logiczne tabele; pierwsza postać normalna (1NF) zakłada brak powtarzających się grup i pojedyncze wartości w komórkach (np. tabela z osobnymi kolumnami dla telefonów), druga postać normalna (2NF) eliminuje częściowe zależności (np. podział danych o zamówieniach i produktach na dwie tabele), a trzecia postać normalna (3NF) eliminuje zależności przechodnie (np. oddzielenie danych o dostawcach od produktów). Przykład: rozdzielenie danych o klientach i zamówieniach na osobne tabele."
   },
@@ -383,7 +383,7 @@ const questions = [
     "question": "Wymień i opisz cechy różnych typów aplikacji mobilnych (natywne, hybrydowe, wieloplatformowe itp.).",
     "answer": "Aplikacje natywne są tworzone bezpośrednio pod dany system operacyjny (np. Swift dla iOS), oferują najwyższą wydajność i dostęp do funkcji urządzenia; hybrydowe działają na wielu platformach dzięki webview (np. Ionic), są łatwiejsze w utrzymaniu, ale mogą być wolniejsze; wieloplatformowe (np. Flutter, React Native) kompilują się do natywnego kodu, zapewniając kompromis między wydajnością a uniwersalnością."
   },
-  {
+{
     "question": "Jakie są metody zarządzania pamięcią w aplikacjach mobilnych?",
     "answer": "Zarządzanie pamięcią w aplikacjach mobilnych obejmuje stosowanie mechanizmów garbage collection (np. w Androidzie i iOS), ręczne zwalnianie nieużywanych zasobów, ograniczanie liczby uruchomionych procesów, optymalizację cyklu życia komponentów oraz monitorowanie zużycia pamięci za pomocą narzędzi deweloperskich; przykładem jest usuwanie bitmap i zamykanie strumieni po zakończonej operacji, aby zapobiec wyciekom pamięci."
   },
@@ -463,7 +463,7 @@ const questions = [
     "question": "Jak zaprojektować intuicyjny i responsywny interfejs użytkownika, który zapewni pozytywne doświadczenia użytkownika na różnych urządzeniach i rozmiarach ekranów?",
     "answer": "Trzeba stosować elastyczne układy (ConstraintLayout, Flexbox), projektować czytelne i zrozumiałe ikony, korzystać z systemowych wzorców nawigacji oraz testować aplikację na różnych urządzeniach; przykładem jest responsywny layout, który automatycznie dostosowuje rozmieszczenie przycisków na smartfonie i tablecie."
   },
-  {
+{
     "question": "Jak zapewnić, aby aplikacja mobilna była zgodna z trendami UX/UI, takimi jak dark mode, gesty nawigacyjne czy minimalistyczny design?",
     "answer": "Aby aplikacja była zgodna z nowoczesnymi trendami UX/UI, należy wykorzystywać systemowe motywy (np. wsparcie dark mode w Androidzie i iOS), implementować intuicyjne gesty nawigacyjne zgodnie z wytycznymi platformy oraz projektować minimalistyczne ekrany, które skupiają się na najważniejszych funkcjach i nie przytłaczają użytkownika nadmiarem informacji; przykładem jest aplikacja z trybem ciemnym aktywowanym automatycznie w zależności od ustawień systemu."
   },
@@ -502,5 +502,21 @@ const questions = [
   {
     "question": "Jakie są kluczowe strategie i techniki zabezpieczania aplikacji mobilnych przed zagrożeniami, takimi jak ataki typu man-in-the-middle, kradzież danych czy malware?",
     "answer": "Należy stosować szyfrowanie transmisji danych (SSL/TLS), przechowywać wrażliwe dane w bezpiecznych magazynach (np. Keychain, Keystore), ograniczać uprawnienia aplikacji, regularnie aktualizować biblioteki oraz monitorować podejrzane zachowania aplikacji; przykładem jest szyfrowanie tokenów logowania i wykrywanie prób modyfikacji aplikacji przez rootowanie."
+  },
+  {
+    "question": "Jakie funkcje oferują narzędzia do zarządzania projektami, które są kluczowe dla skutecznego zarządzania zespołem programistycznym?",
+    "answer": "Narzędzia do zarządzania projektami, takie jak Jira, Trello czy Asana, oferują zarządzanie zadaniami, harmonogramowanie, śledzenie postępów, zarządzanie dokumentacją oraz integracje z narzędziami deweloperskimi."
+  },
+  {
+    "question": "Jak pojęcia z teorii liczb są stosowane w projektowaniu struktur danych dla kryptografii i zabezpieczeń?",
+    "answer": "Teoria liczb jest podstawą działania wielu struktur bezpieczeństwa, takich jak drzewa Merkle’a używane w blockchainie do weryfikacji integralności danych oraz generatory liczb losowych oparte na kongruencjach liniowych, stosowane w szyfrowaniu strumieniowym."
+  },
+  {
+    "question": "Jakie są kluczowe etapy w procesie budowy modelu uczenia maszynowego i jak wpływają one na jakość i efektywność systemu sztucznej inteligencji?",
+    "answer": "Proces budowy modelu uczenia maszynowego obejmuje zbieranie danych, ich przetwarzanie, wybór modelu, trenowanie, ewaluację i optymalizację hiperparametrów. Każdy z tych etapów wpływa na jakość i skuteczność końcowego systemu AI."
+  },
+  {
+    "question": "W jaki sposób techniki uczenia nadzorowanego i nienadzorowanego różnią się pod względem zastosowań i implementacji w systemach sztucznej inteligencji?",
+    "answer": "Uczenie nadzorowane wykorzystuje dane z etykietami i znajduje zastosowanie w klasyfikacji czy regresji, np. rozpoznawanie twarzy. Uczenie nienadzorowane pozwala modelowi samodzielnie wykrywać wzorce w danych, np. przez klasteryzację klientów."
   }
 ];
