@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <title>Quiz Dyplomowy – Wersja na komputer</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="style_desktop.css">
+</head>
+<body>
+  <div id="desktop-app">
+    <aside class="sidebar">
+      <h2>Lista pytań</h2>
+      <ul id="question-list"></ul>
+      <button id="mode-exam" class="big-btn">Tryb egzamin (20 losowych)</button>
+      <button id="mode-learning" class="big-btn">Tryb nauki</button>
+      <button id="mode-flashcards" class="big-btn">Fiszki</button>
+    </aside>
+    <main class="main-panel">
+      <div class="main-content">
+        <h1 id="question-title">Quiz Dyplomowy – Informatyka</h1>
+        <div id="question-body"></div>
+        <div id="answers"></div>
+        <div class="nav-panel">
+          <button id="prev-btn" disabled>Poprzednie</button>
+          <button id="next-btn" disabled>Następne</button>
+        </div>
+        <div id="flashcard-controls" style="display:none;">
+          <button id="prev-flash" disabled>Poprzednia fiszka</button>
+          <button id="next-flash" disabled>Następna fiszka</button>
+        </div>
+        <div id="result-panel" style="display:none;"></div>
+      </div>
+    </main>
+  </div>
+  <script src="questions_formatted.js"></script>
+  <script src="desktop.js"></script>
+</body>
+</html>
