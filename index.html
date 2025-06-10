@@ -157,7 +157,7 @@
       padding: 0.29em 0;
       display: block;
     }
-    .category-list input[type="radio"] { margin-right: 9px; accent-color: #2196f3;}
+    .category-list input[type=\"radio\"] { margin-right: 9px; accent-color: #2196f3;}
     .category-list { /* gap już dodany wyżej */ }
 
   </style>
@@ -179,6 +179,25 @@
   <div id="range-container" class="range-container" style="display:none"></div>
 <script src="questions_formatted.js"></script>
 <script>
+  // Skrypt wykrywania urządzenia
+  (function() {
+    // Podstawowe wykrywanie - można je rozbudować o bardziej zaawansowane metody
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isTablet = /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/i.test(navigator.userAgent);
+
+    // Jeśli nie jest to typowo mobilne urządzenie (smartfon) ani tablet, przekieruj na wersję desktopową
+    // Możesz dostosować tę logikę, np. jeśli chcesz, aby tablety też korzystały z wersji desktop.
+    // Obecnie, jeśli to NIE jest smartfon LUB NIE jest tablet (co obejmuje PC), to przekieruje.
+    // Aby tablety też szły na desktop.html, zmień warunek na: if (!isMobile)
+    if (!isMobile && !isTablet) { // Prostszy warunek: if (!isMobile) przekieruje również tablety.
+      // Sprawdź, czy nie jesteśmy już na desktop.html, aby uniknąć pętli przekierowań
+      if (window.location.pathname.indexOf('desktop.html') === -1) {
+         window.location.href = 'desktop.html';
+      }
+    }
+  })();
+
+  // Reszta Twojego istniejącego kodu JavaScript dla index.html
   let currentQuestionIndex = 0;
   let score = 0;
   let allowClick = true;
@@ -237,10 +256,12 @@
     answersDiv.innerHTML = '';
 
     let allAnswers = [questionData.answer];
-    let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
-    shuffle(indices);
-    for (let i = 0; i < 3 && i < indices.length; i++) {
-      allAnswers.push(questionsArray[indices[i]].answer);
+    // Poprawka: Upewnij się, że questionsArray jest poprawnie filtrowane i nie próbujemy uzyskać dostępu do questions.answer
+    let otherQuestionsIndices = questions.map((_, i) => i).filter(i => questions[i].question !== questionData.question);
+    shuffle(otherQuestionsIndices);
+    
+    for (let i = 0; i < 3 && i < otherQuestionsIndices.length; i++) {
+        allAnswers.push(questions[otherQuestionsIndices[i]].answer);
     }
     allAnswers = shuffle(allAnswers);
 
@@ -327,10 +348,11 @@
     answersDiv.innerHTML = '';
 
     let allAnswers = [questionData.answer];
-    let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
-    shuffle(indices);
-    for (let i = 0; i < 3 && i < indices.length; i++) {
-      allAnswers.push(questionsArray[indices[i]].answer);
+    let otherQuestionsIndices = questions.map((_, i) => i).filter(i => questions[i].question !== questionData.question);
+    shuffle(otherQuestionsIndices);
+
+    for (let i = 0; i < 3 && i < otherQuestionsIndices.length; i++) {
+      allAnswers.push(questions[otherQuestionsIndices[i]].answer);
     }
     allAnswers = shuffle(allAnswers);
 
@@ -422,7 +444,7 @@
     document.getElementById("menu").style.display = "none";
     document.getElementById("range-container").style.display = "flex";
     let total = questions.length;
-    let html = `<h3>Wybierz zakres pytań</h3>
+    let html = `<div class="title">Wybierz zakres pytań</div>
       <div class="category-list">
         <label><input type="radio" name="range" value="all" checked> Wszystkie pytania (1-${total})</label>`;
     let rangeStep = 20;
@@ -477,10 +499,12 @@
     answersDiv.innerHTML = '';
 
     let allAnswers = [questionData.answer];
-    let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
-    shuffle(indices);
-    for (let i = 0; i < 3 && i < indices.length; i++) {
-      allAnswers.push(questionsArray[indices[i]].answer);
+    // Poprawka: Upewnij się, że questionsArray jest poprawnie filtrowane i nie próbujemy uzyskać dostępu do questions.answer
+    let otherQuestionsIndices = questions.map((_, i) => i).filter(i => questions[i].question !== questionData.question);
+    shuffle(otherQuestionsIndices);
+    
+    for (let i = 0; i < 3 && i < otherQuestionsIndices.length; i++) {
+        allAnswers.push(questions[otherQuestionsIndices[i]].answer);
     }
     allAnswers = shuffle(allAnswers);
 
@@ -545,7 +569,7 @@
     document.getElementById("menu").style.display = "none";
     document.getElementById("range-container").style.display = "flex";
     let total = questions.length;
-    let html = `<h3>Wybierz zakres pytań (fiszki)</h3>
+    let html = `<div class="title">Wybierz zakres pytań (fiszki)</div>
       <div class="category-list">
         <label><input type="radio" name="range" value="all" checked> Wszystkie pytania (1-${total})</label>`;
     let rangeStep = 20;
@@ -593,8 +617,13 @@
   }
 
   // ========== START ==========
-
-  showMenu();
+  // Upewnij się, że menu jest pokazywane po załadowaniu, jeśli nie nastąpiło przekierowanie
+  if (document.getElementById("menu").style.display !== "none" && 
+      document.getElementById("quiz-main-container").style.display === "none" &&
+      document.getElementById("flashcard-container").style.display === "none" &&
+      document.getElementById("range-container").style.display === "none") {
+    showMenu();
+  }
 
 </script>
 </body>
