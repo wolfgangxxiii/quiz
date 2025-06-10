@@ -23,8 +23,6 @@
         color: #f8fafb;
       }
     }
-
-    /* Container */
     .menu, .quiz-container, .flashcard-container, .range-container {
       background: rgba(255,255,255,0.97);
       padding: 2.2em 1.2em 1.4em 1.2em;
@@ -50,7 +48,6 @@
     }
     @keyframes fadein { from { opacity: 0; transform: translateY(40px);} to { opacity:1; transform: translateY(0);} }
 
-    /* Title & progress */
     .title {
       text-align: center;
       font-size: 1.22em;
@@ -70,7 +67,6 @@
     .progress { text-align: center; margin-bottom: .8em; font-size: 1.02em; color: #2196f3; font-weight: bold; }
     .question { font-size: 1.08em; margin-bottom: 1.05em; min-height: 44px; text-align: center; font-weight: 500; }
 
-    /* Przyciski */
     .menu button, .range-container button, .answers button, .next-btn, .restart-btn, .back-btn, .show-explanation-btn, .flashcard-nav button {
       margin: .42em 0;
       padding: 1.08em 1em;
@@ -130,11 +126,9 @@
     .flashcard-nav button { flex: 1 1 0; margin: 0; background: linear-gradient(90deg,#24c6bc 60%, #43e97b 100%);}
     .flashcard-nav button[disabled] { opacity: 0.36; background: #c8d1d9; color: #888;}
     .back-btn { background: linear-gradient(90deg, #ef5350 50%, #ffc371 100%); color: #fff; margin-top: 1.1em;}
-    /* Sticky button for next */
     @media (max-width:600px) {
       .next-btn { position: sticky; bottom: 1em; z-index: 9;}
     }
-
     #results { margin-top: 1.4em; padding: 1.1em 1em; background-color: #e3f2fd;
       border: 1.3px solid #90caf9; border-radius: 11px; text-align: center; font-size: 1.17em; color: #134980;}
     @media (prefers-color-scheme: dark) {
@@ -151,10 +145,21 @@
     @media (prefers-color-scheme: dark) {
       .flashcard-answer { background: #234c34; color: #bef7b6; border-color: #55cf7e;}
     }
-    /* input radio for range */
+
+    /* POPRAWKA: zakresy w kolumnie, nie w linii! */
+    .category-list {
+      display: flex;
+      flex-direction: column;
+      gap: .64em;
+    }
+    .category-list label {
+      font-size: 1em;
+      padding: 0.29em 0;
+      display: block;
+    }
     .category-list input[type="radio"] { margin-right: 9px; accent-color: #2196f3;}
-    .category-list label { font-size: 1em; padding: 0.29em 0; }
-    .category-list { gap: .64em;}
+    .category-list { /* gap już dodany wyżej */ }
+
   </style>
 </head>
 <body>
@@ -167,6 +172,7 @@
     <button onclick="startLearningMode()">💡 Tryb nauki z wyjaśnieniem</button>
     <button onclick="startFlashcardsMode()">🃏 Fiszki</button>
     <button onclick="showRangeSelection()">📚 Wybierz zakres pytań</button>
+    <button onclick="showRangeSelectionFlashcards()">🃏 Fiszki – wybierz zakres pytań</button>
   </div>
   <div id="quiz-main-container" class="quiz-container" style="display:none"></div>
   <div id="flashcard-container" class="flashcard-container" style="display:none"></div>
@@ -403,8 +409,6 @@
       renderFlashcard();
     }
   }
-
- 
   function nextFlashcard() {
     if (currentQuestionIndex < questionsArray.length - 1) {
       currentQuestionIndex++;
@@ -412,12 +416,11 @@
     }
   }
 
-  // ========== WYBÓR ZAKRESU PYTAŃ ==========
+  // ========== WYBÓR ZAKRESU PYTAŃ (quiz) ==========
 
   function showRangeSelection() {
     document.getElementById("menu").style.display = "none";
     document.getElementById("range-container").style.display = "flex";
-    // Dziel na zakresy po 20 pytań + ostatni do końca (np. 121-130)
     let total = questions.length;
     let html = `<h3>Wybierz zakres pytań</h3>
       <div class="category-list">
@@ -534,6 +537,46 @@
     score = 0;
     allowClick = true;
     renderExamQuestionRange();
+  }
+
+  // ========== WYBÓR ZAKRESU PYTAŃ (FISZKI) ==========
+
+  function showRangeSelectionFlashcards() {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("range-container").style.display = "flex";
+    let total = questions.length;
+    let html = `<h3>Wybierz zakres pytań (fiszki)</h3>
+      <div class="category-list">
+        <label><input type="radio" name="range" value="all" checked> Wszystkie pytania (1-${total})</label>`;
+    let rangeStep = 20;
+    for (let i = 0; i < total; i += rangeStep) {
+      let start = i + 1;
+      let end = Math.min(i + rangeStep, total);
+      html += `<label><input type="radio" name="range" value="${start}-${end}"> Pytania ${start}-${end}</label>`;
+    }
+    html += `
+      </div>
+      <button onclick="startFlashcardsWithRange()">Rozpocznij fiszki z wybranego zakresu</button>
+      <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+    `;
+    document.getElementById("range-container").innerHTML = html;
+  }
+
+  function startFlashcardsWithRange() {
+    const radios = document.getElementsByName('range');
+    let value = "all";
+    for(let r of radios) { if(r.checked) value = r.value; }
+    let start=0, end=questions.length;
+    if (value !== "all") {
+      let [s,e] = value.split('-').map(x=>parseInt(x));
+      start = s-1; end = e;
+    }
+    questionsArray = [...questions.slice(start, end)];
+    currentQuestionIndex = 0;
+    document.getElementById("range-container").style.display = "none";
+    document.getElementById("quiz-main-container").style.display = "none";
+    document.getElementById("flashcard-container").style.display = "flex";
+    renderFlashcard();
   }
 
   // ========== POMOCNICZE ==========
