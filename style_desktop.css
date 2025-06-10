@@ -13,12 +13,13 @@ body {
   letter-spacing: 0.01em;
   font-size: 18px;
   margin: 0;
-  padding: 20px; /* Add some padding around the body for desktop */
+  padding: 20px;
   transition: background .3s;
   display: flex;
   justify-content: center;
-  align-items: center; 
+  /* align-items: center;  <-- to powoduje problem! */
 }
+
 
 @media (prefers-color-scheme: dark) {
   body {
