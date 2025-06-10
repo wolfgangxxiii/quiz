@@ -2,37 +2,27 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <title>Quiz Dyplomowy – Wersja na komputer</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quiz Dyplomowy – Informatyka (Wersja PC)</title>
   <link rel="stylesheet" href="style_desktop.css">
 </head>
 <body>
-  <div id="desktop-app">
-    <aside class="sidebar">
-      <h2>Lista pytań</h2>
-      <ul id="question-list"></ul>
-      <button id="mode-exam" class="big-btn">Tryb egzamin (20 losowych)</button>
-      <button id="mode-learning" class="big-btn">Tryb nauki</button>
-      <button id="mode-flashcards" class="big-btn">Fiszki</button>
-    </aside>
-    <main class="main-panel">
-      <div class="main-content">
-        <h1 id="question-title">Quiz Dyplomowy – Informatyka</h1>
-        <div id="question-body"></div>
-        <div id="answers"></div>
-        <div class="nav-panel">
-          <button id="prev-btn" disabled>Poprzednie</button>
-          <button id="next-btn" disabled>Następne</button>
-        </div>
-        <div id="flashcard-controls" style="display:none;">
-          <button id="prev-flash" disabled>Poprzednia fiszka</button>
-          <button id="next-flash" disabled>Następna fiszka</button>
-        </div>
-        <div id="result-panel" style="display:none;"></div>
-      </div>
-    </main>
+  <div id="menu" class="menu">
+    <div class="title">
+      <svg fill="none" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2196f3"/><path d="M10 10h12v2H10zm0 5h12v2H10zm0 5h8v2h-8z" fill="#fff"/></svg>
+      Quiz Dyplomowy (PC)
+    </div>
+    <button onclick="startExamMode()">🎯 Tryb egzamin (20 losowych pytań)</button>
+    <button onclick="startLearningMode()">💡 Tryb nauki z wyjaśnieniem</button>
+    <button onclick="startFlashcardsMode()">🃏 Fiszki</button>
+    <button onclick="showRangeSelection()">📚 Wybierz zakres pytań</button>
+    <button onclick="showRangeSelectionFlashcards()">🃏 Fiszki – wybierz zakres pytań</button>
   </div>
-  <script src="questions_formatted.js"></script>
-  <script src="desktop.js"></script>
+  <div id="quiz-main-container" class="quiz-container" style="display:none"></div>
+  <div id="flashcard-container" class="flashcard-container" style="display:none"></div>
+  <div id="range-container" class="range-container" style="display:none"></div>
+
+<script src="questions_formatted.js"></script>
+<script src="desktop.js"></script>
 </body>
 </html>
