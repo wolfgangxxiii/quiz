@@ -1,256 +1,423 @@
-// Stan aplikacji
-let currentMode = null; // "quiz" | "exam" | "learning" | "flashcards"
-let questionsToAsk = [];
-let questionIndex = 0;
+let currentQuestionIndex = 0;
 let score = 0;
-let examWrongQuestions = [];
-let selectedListItem = null;
+let allowClick = true;
+let questionsArray = [];
+let wrongQuestions = [];
+let rangeMode = false;
 
-const questionListEl = document.getElementById('question-list');
-const questionTitleEl = document.getElementById('question-title');
-const questionBodyEl = document.getElementById('question-body');
-const answersEl = document.getElementById('answers');
-const prevBtn = document.getElementById('prev-btn');
-const nextBtn = document.getElementById('next-btn');
-const resultPanel = document.getElementById('result-panel');
-const modeExamBtn = document.getElementById('mode-exam');
-const modeLearningBtn = document.getElementById('mode-learning');
-const modeFlashcardsBtn = document.getElementById('mode-flashcards');
-const flashcardControls = document.getElementById('flashcard-controls');
-const prevFlash = document.getElementById('prev-flash');
-const nextFlash = document.getElementById('next-flash');
-
-// ============ Tryby ==============
-
-modeExamBtn.onclick = startExamMode;
-modeLearningBtn.onclick = startLearningMode;
-modeFlashcardsBtn.onclick = startFlashcardsMode;
-
-function renderQuestionList(selectIdx) {
-  questionListEl.innerHTML = '';
-  questionsToAsk.forEach((q, idx) => {
-    const li = document.createElement('li');
-    li.textContent = `#${idx+1}. ${q.question.slice(0,55)}${q.question.length>55?'...':''}`;
-    li.onclick = () => {
-      if (currentMode === "learning" || currentMode === "quiz") {
-        questionIndex = idx;
-        if (currentMode === "learning") renderLearningQuestion();
-        if (currentMode === "quiz") renderQuizQuestion();
-        updateListHighlight();
-      }
-    };
-    if (idx === selectIdx) {
-      li.classList.add('selected');
-      selectedListItem = li;
-    }
-    questionListEl.appendChild(li);
-  });
+function showMenu() {
+  document.getElementById("menu").style.display = "flex";
+  document.getElementById("quiz-main-container").style.display = "none";
+  document.getElementById("flashcard-container").style.display = "none";
+  document.getElementById("range-container").style.display = "none";
+  rangeMode = false;
 }
 
-function updateListHighlight() {
-  const lis = questionListEl.querySelectorAll('li');
-  lis.forEach((li, idx) => {
-    li.classList.toggle('selected', idx === questionIndex);
-  });
-}
-
-// ==================== TRYB EGZAMIN ====================
+// ========== TRYB EGZAMIN: 20 losowych pytań ==========
 
 function startExamMode() {
-  currentMode = "exam";
-  questionsToAsk = shuffle([...questions]).slice(0,20);
-  questionIndex = 0;
+  questionsArray = getRandomQuestions(questions, 20);
+  currentQuestionIndex = 0;
   score = 0;
-  examWrongQuestions = [];
-  prevBtn.disabled = true;
-  nextBtn.disabled = false;
-  flashcardControls.style.display = "none";
-  resultPanel.style.display = "none";
-  answersEl.innerHTML = '';
-  renderQuestionList(null); // brak listy w egzaminie
+  allowClick = true;
+  wrongQuestions = [];
+  rangeMode = false;
+  document.getElementById("menu").style.display = "none";
+  const quiz = document.getElementById("quiz-main-container");
+  quiz.style.display = "flex";
+  quiz.innerHTML = `
+    <div class="title">Quiz Dyplomowy – Tryb egzamin<br><span style="font-size:0.8em;">(20 losowych pytań)</span></div>
+    <div class="progress" id="progress"></div>
+    <div class="question" id="question"></div>
+    <div class="answers" id="answers"></div>
+    <button class="next-btn" id="next-button" onclick="nextExamQuestion()">Następne pytanie</button>
+    <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+  `;
   renderExamQuestion();
 }
 
-function renderExamQuestion() {
-  resultPanel.style.display = "none";
-  questionTitleEl.textContent = `Egzamin – pytanie ${questionIndex+1} z ${questionsToAsk.length}`;
-  questionBodyEl.textContent = questionsToAsk[questionIndex].question;
-  answersEl.innerHTML = '';
-
-  // losowe odpowiedzi (jedna dobra + 3 losowe złe z innej puli)
-  let good = questionsToAsk[questionIndex].answer;
-  let otherIdxs = [];
-  for(let i=0;i<questions.length;i++) if(questions[i].answer!==good) otherIdxs.push(i);
-  otherIdxs = shuffle(otherIdxs).slice(0,3);
-  let allAnswers = [good, ...otherIdxs.map(i=>questions[i].answer)];
-  allAnswers = shuffle(allAnswers);
-
-  allAnswers.forEach(ans => {
-    const btn = document.createElement('button');
-    btn.textContent = ans;
-    btn.onclick = () => {
-      if (btn.classList.contains('correct') || btn.classList.contains('wrong')) return;
-      if (ans === good) {
-        btn.classList.add('correct');
-        score++;
-      } else {
-        btn.classList.add('wrong');
-        examWrongQuestions.push(questionsToAsk[questionIndex]);
-        // podświetl dobrą
-        [...answersEl.children].forEach(b => {
-          if (b.textContent === good) b.classList.add('correct');
-        });
-      }
-      // odblokuj next
-      nextBtn.disabled = false;
-    };
-    answersEl.appendChild(btn);
-  });
-
-  prevBtn.disabled = questionIndex === 0;
-  nextBtn.disabled = true;
-  prevBtn.onclick = () => {
-    if (questionIndex > 0) {
-      questionIndex--;
-      renderExamQuestion();
-    }
-  };
-  nextBtn.onclick = () => {
-    if (questionIndex < questionsToAsk.length - 1) {
-      questionIndex++;
-      renderExamQuestion();
-    } else {
-      showExamResult();
-    }
-  };
+function getRandomQuestions(arr, n) {
+  let arrCopy = [...arr];
+  let result = [];
+  for (let i = 0; i < n && arrCopy.length; i++) {
+    let idx = Math.floor(Math.random() * arrCopy.length);
+    result.push(arrCopy[idx]);
+    arrCopy.splice(idx, 1);
+  }
+  return result;
 }
 
-function showExamResult() {
-  questionTitleEl.textContent = "Wynik egzaminu";
-  questionBodyEl.textContent = "";
-  answersEl.innerHTML = '';
-  prevBtn.disabled = true;
-  nextBtn.disabled = true;
-  let percent = Math.round(100*score/questionsToAsk.length);
-  resultPanel.style.display = "";
-  resultPanel.innerHTML = `
-    <p>Twój wynik: <strong>${score} / ${questionsToAsk.length}</strong> (${percent}%)</p>
-    ${examWrongQuestions.length ? `<button id="repeat-wrong-btn">Powtórz błędne pytania (${examWrongQuestions.length})</button>` : ""}
-    <button id="restart-exam-btn">Zacznij jeszcze raz</button>
-  `;
-  if (examWrongQuestions.length) {
-    document.getElementById('repeat-wrong-btn').onclick = () => {
-      questionsToAsk = shuffle([...examWrongQuestions]);
-      examWrongQuestions = [];
-      score = 0;
-      questionIndex = 0;
-      renderExamQuestion();
+function renderExamQuestion() {
+  allowClick = true;
+  const questionData = questionsArray[currentQuestionIndex];
+  document.getElementById("question").innerText = questionData.question;
+  document.getElementById("progress").innerText = `Pytanie ${currentQuestionIndex + 1} z ${questionsArray.length}`;
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = '';
+
+  let allAnswers = [questionData.answer];
+  let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
+  shuffle(indices);
+  for (let i = 0; i < 3 && i < indices.length; i++) {
+    if (questionsArray[indices[i]]) { // Ensure item exists
+        allAnswers.push(questionsArray[indices[i]].answer);
     }
   }
-  document.getElementById('restart-exam-btn').onclick = startExamMode;
+  allAnswers = shuffle(allAnswers);
+
+  allAnswers.forEach((ans, idx) => {
+    const btn = document.createElement("button");
+    btn.innerText = `${String.fromCharCode(65+idx)}. ${ans}`;
+    btn.onclick = () => {
+      if (!allowClick) return;
+      allowClick = false;
+      if (ans === questionData.answer) {
+        btn.classList.add("correct");
+        score++;
+      } else {
+        btn.classList.add("wrong");
+        wrongQuestions.push(questionData);
+        let btns = answersDiv.querySelectorAll("button");
+        btns.forEach(b => {
+          if (b.innerText.slice(3) === questionData.answer) b.classList.add("correct");
+        });
+      }
+    };
+    answersDiv.appendChild(btn);
+  });
+  document.getElementById("next-button").style.display = "block";
 }
 
-// ==================== TRYB NAUKI ====================
+function nextExamQuestion() {
+  currentQuestionIndex++;
+  if (currentQuestionIndex < questionsArray.length) {
+    renderExamQuestion();
+  } else {
+    showExamResults();
+  }
+}
+
+function showExamResults() {
+  const quiz = document.getElementById("quiz-main-container");
+  quiz.innerHTML = `
+    <div class="title">Quiz Dyplomowy – Tryb egzamin</div>
+    <div id="results">
+      <p>Twój wynik: ${score} z ${questionsArray.length} (${((score/questionsArray.length)*100).toFixed(1)}%)</p>
+      ${wrongQuestions.length > 0 ? `<button class="next-btn" onclick="repeatWrongQuestions()">Powtórz błędne pytania (${wrongQuestions.length})</button>` : ""}
+    </div>
+    <button class="restart-btn" onclick="startExamMode()">Powtórz egzamin</button>
+    <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+  `;
+}
+
+function repeatWrongQuestions() {
+  if (wrongQuestions.length === 0) return;
+  questionsArray = shuffle([...wrongQuestions]);
+  wrongQuestions = [];
+  currentQuestionIndex = 0;
+  score = 0;
+  allowClick = true;
+  renderExamQuestion();
+}
+
+// ========== TRYB NAUKI ==========
 
 function startLearningMode() {
-  currentMode = "learning";
-  questionsToAsk = [...questions];
-  questionIndex = 0;
-  prevBtn.disabled = false;
-  nextBtn.disabled = false;
-  flashcardControls.style.display = "none";
-  resultPanel.style.display = "none";
-  renderQuestionList(questionIndex);
+  questionsArray = [...questions]; 
+  currentQuestionIndex = 0;
+  document.getElementById("menu").style.display = "none";
+  const quiz = document.getElementById("quiz-main-container");
+  quiz.style.display = "flex";
+  quiz.innerHTML = `
+    <div class="title">Quiz Dyplomowy – Tryb nauki</div>
+    <div class="progress" id="progress"></div>
+    <div class="question" id="question"></div>
+    <div class="answers" id="answers"></div>
+    <button class="next-btn" id="next-button" onclick="nextLearningQuestion()">Następne pytanie</button>
+    <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+  `;
   renderLearningQuestion();
 }
 
 function renderLearningQuestion() {
-  resultPanel.style.display = "none";
-  questionTitleEl.textContent = `Tryb nauki – pytanie ${questionIndex+1} z ${questionsToAsk.length}`;
-  questionBodyEl.textContent = questionsToAsk[questionIndex].question;
-  answersEl.innerHTML = '';
-  const btn = document.createElement('button');
-  btn.textContent = questionsToAsk[questionIndex].answer;
-  btn.classList.add('correct');
-  btn.style.margin = "1.2em auto";
-  btn.style.display = "block";
-  btn.disabled = true;
-  answersEl.appendChild(btn);
+  allowClick = true;
+  const questionData = questionsArray[currentQuestionIndex];
+  document.getElementById("question").innerText = questionData.question;
+  document.getElementById("progress").innerText = `Pytanie ${currentQuestionIndex + 1} z ${questionsArray.length}`;
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = '';
 
-  prevBtn.disabled = questionIndex === 0;
-  nextBtn.disabled = questionIndex === questionsToAsk.length-1;
-  prevBtn.onclick = () => {
-    if (questionIndex > 0) {
-      questionIndex--;
-      renderLearningQuestion();
-      updateListHighlight();
+  let allAnswers = [questionData.answer];
+  let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
+  shuffle(indices);
+  for (let i = 0; i < 3 && i < indices.length; i++) {
+    if (questionsArray[indices[i]]) { // Ensure item exists
+        allAnswers.push(questionsArray[indices[i]].answer);
     }
-  };
-  nextBtn.onclick = () => {
-    if (questionIndex < questionsToAsk.length - 1) {
-      questionIndex++;
-      renderLearningQuestion();
-      updateListHighlight();
-    }
-  };
-  updateListHighlight();
+  }
+  allAnswers = shuffle(allAnswers);
+
+  allAnswers.forEach((ans, idx) => {
+    const btn = document.createElement("button");
+    btn.innerText = `${String.fromCharCode(65+idx)}. ${ans}`;
+    btn.onclick = () => {
+      if (!allowClick) return;
+      allowClick = false;
+      if (ans === questionData.answer) {
+        btn.classList.add("correct");
+      } else {
+        btn.classList.add("wrong");
+        let btns = answersDiv.querySelectorAll("button");
+        btns.forEach(b => {
+          if (b.innerText.slice(3) === questionData.answer) b.classList.add("correct");
+        });
+      }
+    };
+    answersDiv.appendChild(btn);
+  });
+  document.getElementById("next-button").style.display = "block";
 }
 
-// ==================== TRYB FISZEK ====================
+function nextLearningQuestion() {
+  currentQuestionIndex++;
+  if (currentQuestionIndex < questionsArray.length) {
+    renderLearningQuestion();
+  } else {
+    showLearningEnd();
+  }
+}
+
+function showLearningEnd() {
+  const quiz = document.getElementById("quiz-main-container");
+  quiz.innerHTML = `
+    <div class="title">Quiz Dyplomowy – Tryb nauki</div>
+    <div id="results">
+      <p>Koniec sesji nauki!</p>
+    </div>
+    <button class="restart-btn" onclick="startLearningMode()">Powtórz naukę</button>
+    <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+  `;
+}
+
+// ========== FISZKI ==========
 
 function startFlashcardsMode() {
-  currentMode = "flashcards";
-  questionsToAsk = [...questions];
-  questionIndex = 0;
-  flashcardControls.style.display = "";
-  prevBtn.disabled = true;
-  nextBtn.disabled = true;
-  resultPanel.style.display = "none";
-  renderQuestionList(null); // lista nieaktywna w fiszkach
+  questionsArray = [...questions]; 
+  currentQuestionIndex = 0;
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("quiz-main-container").style.display = "none";
+  document.getElementById("flashcard-container").style.display = "flex";
   renderFlashcard();
 }
 
 function renderFlashcard() {
-  questionTitleEl.textContent = `Fiszki – pytanie ${questionIndex+1} z ${questionsToAsk.length}`;
-  questionBodyEl.innerHTML = `<div style="font-weight:600; margin-bottom:1.2em;">${questionsToAsk[questionIndex].question}</div>
-    <button id="show-answer-btn" style="margin: 1.1em auto; display: block;">Pokaż odpowiedź</button>`;
-  answersEl.innerHTML = '';
-
-  document.getElementById('show-answer-btn').onclick = () => {
-    questionBodyEl.innerHTML = `<div style="font-weight:600; margin-bottom:1.2em;">${questionsToAsk[questionIndex].question}</div>
-      <div class="flashcard-answer">${questionsToAsk[questionIndex].answer}</div>`;
-  };
-  prevFlash.disabled = questionIndex === 0;
-  nextFlash.disabled = questionIndex === questionsToAsk.length-1;
-
-  prevFlash.onclick = () => {
-    if (questionIndex > 0) {
-      questionIndex--;
-      renderFlashcard();
-    }
-  };
-  nextFlash.onclick = () => {
-    if (questionIndex < questionsToAsk.length-1) {
-      questionIndex++;
-      renderFlashcard();
-    }
-  };
+  const cont = document.getElementById("flashcard-container");
+  const q = questionsArray[currentQuestionIndex];
+  cont.innerHTML = `
+    <div class="title">Fiszki – powtarzanie pytań</div>
+    <div class="progress">${currentQuestionIndex + 1} z ${questionsArray.length}</div>
+    <div class="flashcard-question">${q.question}</div>
+    <div class="flashcard-answer">${q.answer}</div>
+    <div class="flashcard-nav">
+      <button onclick="prevFlashcard()" ${currentQuestionIndex===0?'disabled':''}>Poprzednia</button>
+      <button onclick="nextFlashcard()" ${currentQuestionIndex===questionsArray.length-1?'disabled':''}>Następna</button>
+    </div>
+    <button class="back-btn" onclick="showMenu()" style="margin-top:1.3em;">Powrót do menu</button>
+  `;
 }
 
-// ==================== FUNKCJE POMOCNICZE ====================
+function prevFlashcard() {
+  if (currentQuestionIndex > 0) {
+    currentQuestionIndex--;
+    renderFlashcard();
+  }
+}
+function nextFlashcard() {
+  if (currentQuestionIndex < questionsArray.length - 1) {
+    currentQuestionIndex++;
+    renderFlashcard();
+  }
+}
 
-function shuffle(arr) {
-  let array = arr.slice();
-  for (let i = array.length-1; i>0; i--) {
-    const j = Math.floor(Math.random()*(i+1));
-    [array[i],array[j]] = [array[j],array[i]];
+// ========== WYBÓR ZAKRESU PYTAŃ (quiz) ==========
+
+function showRangeSelection() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("range-container").style.display = "flex";
+  let total = questions.length; 
+  let html = `<div class="title">Wybierz zakres pytań</div>
+    <div class="category-list">
+      <label><input type="radio" name="range" value="all" checked> Wszystkie pytania (1-${total})</label>`;
+  let rangeStep = 20;
+  for (let i = 0; i < total; i += rangeStep) {
+    let start = i + 1;
+    let end = Math.min(i + rangeStep, total);
+    html += `<label><input type="radio" name="range" value="${start}-${end}"> Pytania ${start}-${end}</label>`;
+  }
+  html += `
+    </div>
+    <button onclick="startExamWithRange()">Rozpocznij quiz z wybranego zakresu</button>
+    <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+  `;
+  document.getElementById("range-container").innerHTML = html;
+}
+
+function startExamWithRange() {
+  const radios = document.getElementsByName('range');
+  let value = "all";
+  for(let r of radios) { if(r.checked) value = r.value; }
+  let start=0, end=questions.length; 
+  if (value !== "all") {
+    let [s,e] = value.split('-').map(x=>parseInt(x));
+    start = s-1; end = e;
+  }
+  questionsArray = [...questions.slice(start, end)];
+  currentQuestionIndex = 0;
+  score = 0;
+  allowClick = true;
+  wrongQuestions = [];
+  rangeMode = true;
+  document.getElementById("range-container").style.display = "none";
+  const quiz = document.getElementById("quiz-main-container");
+  quiz.style.display = "flex";
+  quiz.innerHTML = `
+    <div class="title">Quiz Dyplomowy – Zakres: ${value==="all"?"Wszystkie pytania":value.replace("-","–")}</div>
+    <div class="progress" id="progress"></div>
+    <div class="question" id="question"></div>
+    <div class="answers" id="answers"></div>
+    <button class="next-btn" id="next-button" onclick="nextExamQuestionRange()">Następne pytanie</button>
+    <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+  `;
+  renderExamQuestionRange();
+}
+
+function renderExamQuestionRange() { 
+  allowClick = true;
+  const questionData = questionsArray[currentQuestionIndex];
+  document.getElementById("question").innerText = questionData.question;
+  document.getElementById("progress").innerText = `Pytanie ${currentQuestionIndex + 1} z ${questionsArray.length}`;
+  const answersDiv = document.getElementById("answers");
+  answersDiv.innerHTML = '';
+
+  let allAnswers = [questionData.answer];
+  let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
+  shuffle(indices);
+  for (let i = 0; i < 3 && i < indices.length; i++) {
+    if (questionsArray[indices[i]]) { 
+        allAnswers.push(questionsArray[indices[i]].answer);
+    }
+  }
+  allAnswers = shuffle(allAnswers);
+
+  allAnswers.forEach((ans, idx) => {
+    const btn = document.createElement("button");
+    btn.innerText = `${String.fromCharCode(65+idx)}. ${ans}`;
+    btn.onclick = () => {
+      if (!allowClick) return;
+      allowClick = false;
+      if (ans === questionData.answer) {
+        btn.classList.add("correct");
+        score++;
+      } else {
+        btn.classList.add("wrong");
+        wrongQuestions.push(questionData);
+        let btns = answersDiv.querySelectorAll("button");
+        btns.forEach(b => {
+          if (b.innerText.slice(3) === questionData.answer) b.classList.add("correct");
+        });
+      }
+    };
+    answersDiv.appendChild(btn);
+  });
+  document.getElementById("next-button").style.display = "block";
+}
+
+function nextExamQuestionRange() { 
+  currentQuestionIndex++;
+  if (currentQuestionIndex < questionsArray.length) {
+    renderExamQuestionRange(); 
+  } else {
+    showExamResultsRange(); 
+  }
+}
+
+function showExamResultsRange() { 
+  const quiz = document.getElementById("quiz-main-container");
+  quiz.innerHTML = `
+    <div class="title">Quiz Dyplomowy – Quiz z zakresu</div>
+    <div id="results">
+      <p>Twój wynik: ${score} z ${questionsArray.length} (${((score/questionsArray.length)*100).toFixed(1)}%)</p>
+      ${wrongQuestions.length > 0 ? `<button class="next-btn" onclick="repeatWrongQuestionsRange()">Powtórz błędne pytania (${wrongQuestions.length})</button>` : ""}
+    </div>
+    <button class="restart-btn" onclick="showRangeSelection()">Wybierz inny zakres</button>
+    <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+  `;
+}
+
+function repeatWrongQuestionsRange() { 
+  if (wrongQuestions.length === 0) return;
+  questionsArray = shuffle([...wrongQuestions]);
+  wrongQuestions = [];
+  currentQuestionIndex = 0;
+  score = 0;
+  allowClick = true;
+  renderExamQuestionRange(); 
+}
+
+// ========== WYBÓR ZAKRESU PYTAŃ (FISZKI) ==========
+
+function showRangeSelectionFlashcards() {
+  document.getElementById("menu").style.display = "none";
+  document.getElementById("range-container").style.display = "flex";
+  let total = questions.length; 
+  let html = `<div class="title">Wybierz zakres pytań (fiszki)</div>
+    <div class="category-list">
+      <label><input type="radio" name="range" value="all" checked> Wszystkie pytania (1-${total})</label>`;
+  let rangeStep = 20;
+  for (let i = 0; i < total; i += rangeStep) {
+    let start = i + 1;
+    let end = Math.min(i + rangeStep, total);
+    html += `<label><input type="radio" name="range" value="${start}-${end}"> Pytania ${start}-${end}</label>`;
+  }
+  html += `
+    </div>
+    <button onclick="startFlashcardsWithRange()">Rozpocznij fiszki z wybranego zakresu</button>
+    <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+  `;
+  document.getElementById("range-container").innerHTML = html;
+}
+
+function startFlashcardsWithRange() {
+  const radios = document.getElementsByName('range');
+  let value = "all";
+  for(let r of radios) { if(r.checked) value = r.value; }
+  let start=0, end=questions.length; 
+  if (value !== "all") {
+    let [s,e] = value.split('-').map(x=>parseInt(x));
+    start = s-1; end = e;
+  }
+  questionsArray = [...questions.slice(start, end)];
+  currentQuestionIndex = 0;
+  document.getElementById("range-container").style.display = "none";
+  document.getElementById("quiz-main-container").style.display = "none";
+  document.getElementById("flashcard-container").style.display = "flex";
+  renderFlashcard(); 
+}
+
+// ========== POMOCNICZE ==========
+
+function shuffle(array) {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
   }
   return array;
 }
 
-// ============ START =============
-
-window.onload = () => {
-  // domyślnie start w trybie nauki
-  startLearningMode();
-};
+// ========== START ==========
+// This ensures the menu is shown when the script loads.
+// It assumes 'questions_formatted.js' has already loaded and defined the 'questions' global variable.
+showMenu();
