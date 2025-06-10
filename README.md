@@ -16,11 +16,15 @@ Projekt został stworzony przy użyciu następujących technologii:
 
 Aby skorzystać z quizu:
 
-1.  Sklonuj repozytorium:
-    ```bash
-    git clone https://github.com/wolfgangxxiii/quiz.git
-    ```
-2.  Otwórz plik `index.html` (lub główny plik HTML) w przeglądarce internetowej.
+1.  **Opcja 1: Uruchom online**
+    *   Quiz jest dostępny online pod adresem: [https://quiz-egazmin.netlify.app/](https://quiz-egazmin.netlify.app/)
+
+2.  **Opcja 2: Uruchom lokalnie**
+    *   Sklonuj repozytorium:
+        ```bash
+        git clone https://github.com/wolfgangxxiii/quiz.git
+        ```
+    *   Otwórz plik `index.html` (lub główny plik HTML) w przeglądarce internetowej.
 
 *(Możesz dodać tutaj bardziej szczegółowe instrukcje dotyczące uruchomienia lub konfiguracji, jeśli są potrzebne.)*
 
