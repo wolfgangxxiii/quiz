@@ -38,7 +38,7 @@
     .answers button.wrong {
       background-color: #ef9a9a;
     }
-    .next-btn {
+    .next-btn, .restart-btn { /* Dodany styl dla przycisku restartu */
       margin-top: 1.5em;
       padding: 0.5em 1em;
       background: #2196f3;
@@ -46,60 +46,119 @@
       border: none;
       border-radius: 5px;
       cursor: pointer;
+      margin-right: 10px; /* Dodatkowy margines dla przycisków obok siebie */
+    }
+    #results { /* Styl dla kontenera wyników */
+      margin-top: 2em;
+      padding: 1em;
+      background-color: #e3f2fd;
+      border: 1px solid #90caf9;
+      border-radius: 5px;
     }
   </style>
 </head>
 <body>
-  <div class="quiz-container">
+  <div class="quiz-container" id="quiz-main-container"> <!-- Dodane ID dla łatwiejszego dostępu -->
     <div class="question" id="question">Ładowanie pytania...</div>
     <div class="answers" id="answers"></div>
-    <button class="next-btn" onclick="nextQuestion()">Następne pytanie</button>
+    <button class="next-btn" id="next-button" onclick="nextQuestion()">Następne pytanie</button>
   </div>
 
-  <script src="questions_formatted.js"></script>
+  <script src="questions_formatted.js"></script> <!-- ✔️ Ładowanie definicji pytań -->
   <script>
-    let currentQuestion = 0;
+    let currentQuestionIndex = 0; // Zmieniona nazwa dla jasności
+    let score = 0;
     let allowClick = true;
+    let questionsArray = []; // Tablica na pytania, może być tasowana
 
+    // Funkcja do tasowania tablicy (Fisher-Yates shuffle)
     function shuffle(array) {
-      return array.sort(() => Math.random() - 0.5);
+      let currentIndex = array.length, randomIndex;
+      while (currentIndex !== 0) {
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
+        [array[currentIndex], array[randomIndex]] = [
+          array[randomIndex], array[currentIndex]];
+      }
+      return array;
     }
 
     function renderQuestion() {
       allowClick = true;
-      const questionData = questions[currentQuestion];
-      document.getElementById("question").innerText = `${currentQuestion + 1}. ${questionData.question}`;
+      const questionData = questionsArray[currentQuestionIndex];
+      document.getElementById("question").innerText = `${currentQuestionIndex + 1}/${questionsArray.length}. ${questionData.question}`;
       const answersDiv = document.getElementById("answers");
       answersDiv.innerHTML = '';
 
       const letters = ['A', 'B', 'C', 'D'];
-      questionData.answers.forEach((ans, index) => {
+      // Tasowanie kopii odpowiedzi dla każdego pytania
+      const shuffledAnswers = shuffle([...questionData.answers]);
+
+      shuffledAnswers.forEach((ans, index) => {
         const btn = document.createElement("button");
         btn.innerText = `${letters[index]}. ${ans.text}`;
         btn.onclick = () => {
           if (!allowClick) return;
-          allowClick = false;
+          allowClick = false; // Blokuj kolejne kliknięcia po wybraniu odpowiedzi
+          
           btn.classList.add(ans.correct ? "correct" : "wrong");
-          if (!ans.correct) {
-            // Pokaż prawidłową odpowiedź
-            const buttons = document.querySelectorAll(".answers button");
-            questionData.answers.forEach((a, i) => {
-              if (a.correct) {
-                buttons[i].classList.add("correct");
+          if (ans.correct) {
+            score++;
+          } else {
+            // Pokaż prawidłową odpowiedź, jeśli użytkownik wybrał błędną
+            const allButtons = answersDiv.querySelectorAll("button");
+            shuffledAnswers.forEach((correctAnswerData, correctIdx) => {
+              if (correctAnswerData.correct) {
+                allButtons[correctIdx].classList.add("correct");
               }
             });
           }
+          // Automatyczne przejście do następnego pytania po krótkiej chwili lub zostawienie przycisku "Następne pytanie"
+          // setTimeout(nextQuestion, 1500); // Opcjonalnie: automatyczne przejście
         };
         answersDiv.appendChild(btn);
       });
+       document.getElementById("next-button").style.display = "block"; // Pokaż przycisk "Następne pytanie"
     }
 
     function nextQuestion() {
-      currentQuestion = (currentQuestion + 1) % questions.length;
+      currentQuestionIndex++;
+      if (currentQuestionIndex < questionsArray.length) {
+        renderQuestion();
+      } else {
+        showResults();
+      }
+    }
+
+    function showResults() {
+      const quizContainer = document.getElementById("quiz-main-container");
+      quizContainer.innerHTML = `<h1>Quiz Zakończony!</h1>
+                                 <div id="results">
+                                   <p>Twój wynik: ${score} na ${questionsArray.length} (${((score/questionsArray.length)*100).toFixed(2)}%)</p>
+                                 </div>
+                                 <button class="restart-btn" onclick="restartQuiz()">Rozpocznij od nowa</button>`;
+    }
+
+    function restartQuiz() {
+      currentQuestionIndex = 0;
+      score = 0;
+      allowClick = true;
+      questionsArray = shuffle([...questions]); // Ponownie tasuj oryginalną listę pytań
+      
+      // Przywróć pierwotną strukturę HTML quizu
+      const quizContainer = document.getElementById("quiz-main-container");
+      quizContainer.innerHTML = `
+        <div class="question" id="question">Ładowanie pytania...</div>
+        <div class="answers" id="answers"></div>
+        <button class="next-btn" id="next-button" onclick="nextQuestion()">Następne pytanie</button>
+      `;
       renderQuestion();
     }
 
-    window.onload = renderQuestion;
+    window.onload = () => {
+      questionsArray = shuffle([...questions]); // Tasuj pytania na samym początku
+      renderQuestion();
+    };
   </script>
 </body>
 </html>
