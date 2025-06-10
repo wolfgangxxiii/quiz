@@ -2,231 +2,557 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Quiz Dyplomowy - Informatyka</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Quiz Dyplomowy – Informatyka</title>
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-      background: #f4f4f4;
-    }
+    html, body { height: 100%; margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: Arial, sans-serif;
       min-height: 100vh;
-      background: #f4f4f4;
+      background: linear-gradient(135deg, #f0f6ff 0%, #e5f1ff 55%, #dbf5ff 100%);
+      font-family: 'Segoe UI', Arial, sans-serif;
+      color: #18304b;
+      letter-spacing: 0.01em;
+      font-size: 18px;
       margin: 0;
       padding: 0;
+      transition: background .3s;
     }
-    .quiz-container {
-      background: #fff;
-      padding: 1.5em 1em;
-      border-radius: 16px;
-      max-width: 480px;
-      margin: 1.2em auto 1em auto;
-      box-shadow: 0 2px 16px 2px rgba(0,0,0,0.10);
-      width: 97vw;
+    @media (prefers-color-scheme: dark) {
+      body {
+        background: linear-gradient(135deg, #172230 0%, #20324e 100%);
+        color: #f8fafb;
+      }
+    }
+
+    /* Container */
+    .menu, .quiz-container, .flashcard-container, .range-container {
+      background: rgba(255,255,255,0.97);
+      padding: 2.2em 1.2em 1.4em 1.2em;
+      border-radius: 20px;
+      max-width: 410px;
+      margin: 2.1em auto 1.3em auto;
+      box-shadow: 0 4px 32px 2px rgba(64,96,180,0.08), 0 0px 0px #fff;
+      width: 96vw;
       min-height: 370px;
       display: flex;
       flex-direction: column;
       justify-content: flex-start;
+      position: relative;
+      animation: fadein .5s;
     }
+    @media (max-width: 600px) {
+      .menu, .quiz-container, .flashcard-container, .range-container {
+        margin: 1.1em auto 1.1em auto;
+        padding: 1.1em 2vw 1.2em 2vw;
+        max-width: 99vw;
+        border-radius: 1.1em;
+      }
+    }
+    @keyframes fadein { from { opacity: 0; transform: translateY(40px);} to { opacity:1; transform: translateY(0);} }
+
+    /* Title & progress */
     .title {
-      font-size: 1.4em;
+      text-align: center;
+      font-size: 1.22em;
+      font-weight: 700;
+      margin-bottom: .7em;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: .6em;
+      color: #0d47a1;
+    }
+    .title svg { height: 1.3em; width: 1.3em; opacity: .93; vertical-align: middle;}
+    @media (prefers-color-scheme: dark) {
+      .title { color: #90caf9;}
+      .menu, .quiz-container, .flashcard-container, .range-container { background: #233354e6;}
+    }
+    .progress { text-align: center; margin-bottom: .8em; font-size: 1.02em; color: #2196f3; font-weight: bold; }
+    .question { font-size: 1.08em; margin-bottom: 1.05em; min-height: 44px; text-align: center; font-weight: 500; }
+
+    /* Przyciski */
+    .menu button, .range-container button, .answers button, .next-btn, .restart-btn, .back-btn, .show-explanation-btn, .flashcard-nav button {
+      margin: .42em 0;
+      padding: 1.08em 1em;
+      font-size: 1.07em;
+      border: none;
+      border-radius: 13px;
+      background: linear-gradient(90deg, #2196f3 65%, #5ec3fe 100%);
+      color: #fff;
+      cursor: pointer;
       font-weight: 600;
-      margin-bottom: .7em;
-      text-align: center;
-      letter-spacing: 0.5px;
-    }
-    .progress {
-      text-align: center;
-      margin-bottom: .7em;
-      font-size: 1em;
-      color: #2196f3;
-      font-weight: bold;
-      letter-spacing: 1px;
-    }
-    .question {
-      font-size: 1.18em;
-      margin-bottom: 1em;
-      min-height: 48px;
-      text-align: center;
-      font-weight: 500;
+      width: 100%;
+      box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+      transition: background .13s, transform .07s, box-shadow .15s;
+      will-change: transform;
+      outline: none;
+      position: relative;
+      user-select: none;
+      -webkit-tap-highlight-color: rgba(33,150,243,0.2);
+      display: block;
     }
     .answers button {
-      display: block;
-      margin: 0.5em 0;
-      padding: 1em 1em;
-      width: 100%;
-      background: #e0e0e0;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1em;
-      min-height: 48px;
-      box-shadow: 0 1px 5px rgba(0,0,0,0.04);
-      transition: background 0.15s, transform 0.09s;
-      user-select: none;
-      -webkit-tap-highlight-color: #b3e5fc;
+      background: linear-gradient(90deg,#e3ebf7 65%,#d5f7e6 100%);
+      color: #164e33;
+      font-weight: 500;
+      border: 1.5px solid #d3e4f7;
+      box-shadow: 0 2px 8px rgba(38,198,218,0.02);
+      margin: 0.45em 0;
+      font-size: 1.01em;
     }
-    .answers button:active {
-      background: #b3e5fc;
+    .answers button:active, .menu button:active, .range-container button:active, .next-btn:active, .restart-btn:active, .back-btn:active, .show-explanation-btn:active {
+      background: linear-gradient(90deg, #1565c0 70%, #27b7f5 100%);
+      color: #e3f7ff;
       transform: scale(0.97);
+      box-shadow: 0 1px 1px #1565c055;
     }
     .answers button.correct {
-      background-color: #7ae27c;
-      color: #174516;
+      background: linear-gradient(92deg, #6fe783 80%, #eafef4 100%);
+      color: #184d1c; border: 1.7px solid #21b04c;
       font-weight: bold;
+      box-shadow: 0 4px 24px #77fdaf44;
     }
     .answers button.wrong {
-      background-color: #ffb4b4;
-      color: #810e0e;
+      background: linear-gradient(92deg, #ffb4b4 80%, #fff2f2 100%);
+      color: #810e0e; border: 1.6px solid #c60000;
+      box-shadow: 0 4px 14px #ffb4b455;
     }
-    .next-btn, .restart-btn {
+    .next-btn, .restart-btn, .back-btn, .show-explanation-btn, .flashcard-nav button {
       margin-top: 1.2em;
-      padding: 0.9em 1.2em;
-      background: #2196f3;
-      color: white;
+      margin-bottom: 0;
+      background: linear-gradient(90deg, #2196f3 70%, #7fdcff 100%);
+      font-weight: 700;
+      color: #fff;
       border: none;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 1.07em;
-      width: 100%;
-      box-shadow: 0 2px 7px rgba(33,150,243,0.12);
-      font-weight: 500;
-      transition: background .15s;
+      box-shadow: 0 2px 10px rgba(33,150,243,0.08);
     }
-    .next-btn:active, .restart-btn:active {
-      background: #1976d2;
+    .flashcard-nav { display: flex; gap: 1em; margin-top: 1.2em; }
+    .flashcard-nav button { flex: 1 1 0; margin: 0; background: linear-gradient(90deg,#24c6bc 60%, #43e97b 100%);}
+    .flashcard-nav button[disabled] { opacity: 0.36; background: #c8d1d9; color: #888;}
+    .back-btn { background: linear-gradient(90deg, #ef5350 50%, #ffc371 100%); color: #fff; margin-top: 1.1em;}
+    /* Sticky button for next */
+    @media (max-width:600px) {
+      .next-btn { position: sticky; bottom: 1em; z-index: 9;}
     }
-    #results {
-      margin-top: 1.4em;
-      padding: 1.1em 1em;
-      background-color: #e3f2fd;
-      border: 1px solid #90caf9;
-      border-radius: 10px;
-      text-align: center;
-      font-size: 1.13em;
+
+    #results { margin-top: 1.4em; padding: 1.1em 1em; background-color: #e3f2fd;
+      border: 1.3px solid #90caf9; border-radius: 11px; text-align: center; font-size: 1.17em; color: #134980;}
+    @media (prefers-color-scheme: dark) {
+      #results { background: #222f4e; border-color:#314e7e; color:#b3eaff;}
+      .answers button, .flashcard-answer { color: #e8fff6;}
+      .answers button { background: linear-gradient(90deg,#3a4565 65%,#335c45 100%); border-color: #5ae5b2;}
+      .answers button.correct { background: linear-gradient(92deg, #4fd773 80%, #234c34 100%); color: #e2ffe3; }
+      .answers button.wrong { background: linear-gradient(92deg, #ff9a9a 80%, #5e2438 100%); color: #ffd6d6; }
     }
-    @media (max-width: 500px) {
-      .quiz-container {
-        padding: 1em 2vw;
-        max-width: 99vw;
-        border-radius: 0.8em;
-      }
-      .title { font-size: 1.07em; }
-      .progress { font-size: 0.98em; }
-      .question { font-size: 1.02em; }
-      .answers button { font-size: 0.96em; }
-      #results { font-size: 1em;}
+    .flashcard-question { font-size: 1.09em; min-height: 55px; margin-bottom: 1.2em; text-align: center; }
+    .flashcard-answer { margin: .5em 0 1.2em 0; padding: 1.08em; background: #f1ffe8;
+      border: 1.5px solid #b2dfdb; border-radius: 11px; color: #317431;
+      font-size: 1.02em; text-align: center; box-shadow: 0 2px 9px #b1fdb155;}
+    @media (prefers-color-scheme: dark) {
+      .flashcard-answer { background: #234c34; color: #bef7b6; border-color: #55cf7e;}
     }
+    /* input radio for range */
+    .category-list input[type="radio"] { margin-right: 9px; accent-color: #2196f3;}
+    .category-list label { font-size: 1em; padding: 0.29em 0; }
+    .category-list { gap: .64em;}
   </style>
 </head>
 <body>
-  <div class="quiz-container" id="quiz-main-container">
-    <div class="title">Quiz Dyplomowy – Informatyka</div>
-    <div class="progress" id="progress"></div>
-    <div class="question" id="question">Ładowanie pytania...</div>
-    <div class="answers" id="answers"></div>
-    <button class="next-btn" id="next-button" onclick="nextQuestion()">Następne pytanie</button>
+  <div id="menu" class="menu">
+    <div class="title">
+      <svg fill="none" viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#2196f3"/><path d="M10 10h12v2H10zm0 5h12v2H10zm0 5h8v2h-8z" fill="#fff"/></svg>
+      Quiz Dyplomowy
+    </div>
+    <button onclick="startExamMode()">🎯 Tryb egzamin (20 losowych pytań)</button>
+    <button onclick="startLearningMode()">💡 Tryb nauki z wyjaśnieniem</button>
+    <button onclick="startFlashcardsMode()">🃏 Fiszki</button>
+    <button onclick="showRangeSelection()">📚 Wybierz zakres pytań</button>
   </div>
+  <div id="quiz-main-container" class="quiz-container" style="display:none"></div>
+  <div id="flashcard-container" class="flashcard-container" style="display:none"></div>
+  <div id="range-container" class="range-container" style="display:none"></div>
+<script src="questions_formatted.js"></script>
+<script>
+  let currentQuestionIndex = 0;
+  let score = 0;
+  let allowClick = true;
+  let questionsArray = [];
+  let wrongQuestions = [];
+  let rangeMode = false;
 
-  <script src="questions_formatted.js"></script>
-  <script>
-    // tu jest dokładnie Twój JS z index.html – NIE ZMIENIAM
-    let currentQuestionIndex = 0;
-    let score = 0;
-    let allowClick = true;
-    let questionsArray = [];
+  function showMenu() {
+    document.getElementById("menu").style.display = "flex";
+    document.getElementById("quiz-main-container").style.display = "none";
+    document.getElementById("flashcard-container").style.display = "none";
+    document.getElementById("range-container").style.display = "none";
+    rangeMode = false;
+  }
 
-    function shuffle(array) {
-      let currentIndex = array.length, randomIndex;
-      while (currentIndex !== 0) {
-        randomIndex = Math.floor(Math.random() * currentIndex);
-        currentIndex--;
-        [array[currentIndex], array[currentIndex]] = [
-          array[randomIndex], array[currentIndex]];
-      }
-      return array;
+  // ========== TRYB EGZAMIN: 20 losowych pytań ==========
+
+  function startExamMode() {
+    questionsArray = getRandomQuestions(questions, 20);
+    currentQuestionIndex = 0;
+    score = 0;
+    allowClick = true;
+    wrongQuestions = [];
+    rangeMode = false;
+    document.getElementById("menu").style.display = "none";
+    const quiz = document.getElementById("quiz-main-container");
+    quiz.style.display = "flex";
+    quiz.innerHTML = `
+      <div class="title">Quiz Dyplomowy – Tryb egzamin<br><span style="font-size:0.8em;">(20 losowych pytań)</span></div>
+      <div class="progress" id="progress"></div>
+      <div class="question" id="question"></div>
+      <div class="answers" id="answers"></div>
+      <button class="next-btn" id="next-button" onclick="nextExamQuestion()">Następne pytanie</button>
+      <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+    `;
+    renderExamQuestion();
+  }
+
+  function getRandomQuestions(arr, n) {
+    let arrCopy = [...arr];
+    let result = [];
+    for (let i = 0; i < n && arrCopy.length; i++) {
+      let idx = Math.floor(Math.random() * arrCopy.length);
+      result.push(arrCopy[idx]);
+      arrCopy.splice(idx, 1);
     }
+    return result;
+  }
 
-    function renderQuestion() {
-      allowClick = true;
-      const questionData = questionsArray[currentQuestionIndex];
-      document.getElementById("question").innerText = questionData.question;
-      document.getElementById("progress").innerText = 
-        `Pytanie ${currentQuestionIndex + 1} z ${questionsArray.length}`;
-      const answersDiv = document.getElementById("answers");
-      answersDiv.innerHTML = '';
+  function renderExamQuestion() {
+    allowClick = true;
+    const questionData = questionsArray[currentQuestionIndex];
+    document.getElementById("question").innerText = questionData.question;
+    document.getElementById("progress").innerText = `Pytanie ${currentQuestionIndex + 1} z ${questionsArray.length}`;
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = '';
 
-      let allAnswers = [questionData.answer];
-      let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
-      shuffle(indices);
-      for (let i = 0; i < 3; i++) {
-        allAnswers.push(questionsArray[indices[i]].answer);
-      }
-      allAnswers = shuffle(allAnswers);
-
-      allAnswers.forEach((ans, idx) => {
-        const btn = document.createElement("button");
-        btn.innerText = `${String.fromCharCode(65+idx)}. ${ans}`;
-        btn.onclick = () => {
-          if (!allowClick) return;
-          allowClick = false;
-          if (ans === questionData.answer) {
-            btn.classList.add("correct");
-            score++;
-          } else {
-            btn.classList.add("wrong");
-            let btns = answersDiv.querySelectorAll("button");
-            btns.forEach(b => {
-              if (b.innerText.slice(3) === questionData.answer) b.classList.add("correct");
-            });
-          }
-        };
-        answersDiv.appendChild(btn);
-      });
-      document.getElementById("next-button").style.display = "block";
+    let allAnswers = [questionData.answer];
+    let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
+    shuffle(indices);
+    for (let i = 0; i < 3 && i < indices.length; i++) {
+      allAnswers.push(questionsArray[indices[i]].answer);
     }
+    allAnswers = shuffle(allAnswers);
 
-    function nextQuestion() {
+    allAnswers.forEach((ans, idx) => {
+      const btn = document.createElement("button");
+      btn.innerText = `${String.fromCharCode(65+idx)}. ${ans}`;
+      btn.onclick = () => {
+        if (!allowClick) return;
+        allowClick = false;
+        if (ans === questionData.answer) {
+          btn.classList.add("correct");
+          score++;
+        } else {
+          btn.classList.add("wrong");
+          wrongQuestions.push(questionData);
+          let btns = answersDiv.querySelectorAll("button");
+          btns.forEach(b => {
+            if (b.innerText.slice(3) === questionData.answer) b.classList.add("correct");
+          });
+        }
+      };
+      answersDiv.appendChild(btn);
+    });
+    document.getElementById("next-button").style.display = "block";
+  }
+
+  function nextExamQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questionsArray.length) {
+      renderExamQuestion();
+    } else {
+      showExamResults();
+    }
+  }
+
+  function showExamResults() {
+    const quiz = document.getElementById("quiz-main-container");
+    quiz.innerHTML = `
+      <div class="title">Quiz Dyplomowy – Tryb egzamin</div>
+      <div id="results">
+        <p>Twój wynik: ${score} z ${questionsArray.length} (${((score/questionsArray.length)*100).toFixed(1)}%)</p>
+        ${wrongQuestions.length > 0 ? `<button class="next-btn" onclick="repeatWrongQuestions()">Powtórz błędne pytania (${wrongQuestions.length})</button>` : ""}
+      </div>
+      <button class="restart-btn" onclick="startExamMode()">Powtórz egzamin</button>
+      <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+    `;
+  }
+
+  function repeatWrongQuestions() {
+    if (wrongQuestions.length === 0) return;
+    questionsArray = shuffle([...wrongQuestions]);
+    wrongQuestions = [];
+    currentQuestionIndex = 0;
+    score = 0;
+    allowClick = true;
+    renderExamQuestion();
+  }
+
+  // ========== TRYB NAUKI ==========
+
+  function startLearningMode() {
+    questionsArray = [...questions];
+    currentQuestionIndex = 0;
+    document.getElementById("menu").style.display = "none";
+    const quiz = document.getElementById("quiz-main-container");
+    quiz.style.display = "flex";
+    quiz.innerHTML = `
+      <div class="title">Quiz Dyplomowy – Tryb nauki</div>
+      <div class="progress" id="progress"></div>
+      <div class="question" id="question"></div>
+      <div class="answers" id="answers"></div>
+      <button class="next-btn" id="next-button" onclick="nextLearningQuestion()">Następne pytanie</button>
+      <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+    `;
+    renderLearningQuestion();
+  }
+
+  function renderLearningQuestion() {
+    allowClick = true;
+    const questionData = questionsArray[currentQuestionIndex];
+    document.getElementById("question").innerText = questionData.question;
+    document.getElementById("progress").innerText = `Pytanie ${currentQuestionIndex + 1} z ${questionsArray.length}`;
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = '';
+
+    let allAnswers = [questionData.answer];
+    let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
+    shuffle(indices);
+    for (let i = 0; i < 3 && i < indices.length; i++) {
+      allAnswers.push(questionsArray[indices[i]].answer);
+    }
+    allAnswers = shuffle(allAnswers);
+
+    allAnswers.forEach((ans, idx) => {
+      const btn = document.createElement("button");
+      btn.innerText = `${String.fromCharCode(65+idx)}. ${ans}`;
+      btn.onclick = () => {
+        if (!allowClick) return;
+        allowClick = false;
+        if (ans === questionData.answer) {
+          btn.classList.add("correct");
+        } else {
+          btn.classList.add("wrong");
+          let btns = answersDiv.querySelectorAll("button");
+          btns.forEach(b => {
+            if (b.innerText.slice(3) === questionData.answer) b.classList.add("correct");
+          });
+        }
+      };
+      answersDiv.appendChild(btn);
+    });
+    document.getElementById("next-button").style.display = "block";
+  }
+
+  function nextLearningQuestion() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questionsArray.length) {
+      renderLearningQuestion();
+    } else {
+      showLearningEnd();
+    }
+  }
+
+  function showLearningEnd() {
+    const quiz = document.getElementById("quiz-main-container");
+    quiz.innerHTML = `
+      <div class="title">Quiz Dyplomowy – Tryb nauki</div>
+      <div id="results">
+        <p>Koniec sesji nauki!</p>
+      </div>
+      <button class="restart-btn" onclick="startLearningMode()">Powtórz naukę</button>
+      <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+    `;
+  }
+
+  // ========== FISZKI ==========
+
+  function startFlashcardsMode() {
+    questionsArray = [...questions];
+    currentQuestionIndex = 0;
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("quiz-main-container").style.display = "none";
+    document.getElementById("flashcard-container").style.display = "flex";
+    renderFlashcard();
+  }
+
+  function renderFlashcard() {
+    const cont = document.getElementById("flashcard-container");
+    const q = questionsArray[currentQuestionIndex];
+    cont.innerHTML = `
+      <div class="title">Fiszki – powtarzanie pytań</div>
+      <div class="progress">${currentQuestionIndex + 1} z ${questionsArray.length}</div>
+      <div class="flashcard-question">${q.question}</div>
+      <div class="flashcard-answer">${q.answer}</div>
+      <div class="flashcard-nav">
+        <button onclick="prevFlashcard()" ${currentQuestionIndex===0?'disabled':''}>Poprzednia</button>
+        <button onclick="nextFlashcard()" ${currentQuestionIndex===questionsArray.length-1?'disabled':''}>Następna</button>
+      </div>
+      <button class="back-btn" onclick="showMenu()" style="margin-top:1.3em;">Powrót do menu</button>
+    `;
+  }
+
+  function prevFlashcard() {
+    if (currentQuestionIndex > 0) {
+      currentQuestionIndex--;
+      renderFlashcard();
+    }
+  }
+
+ 
+  function nextFlashcard() {
+    if (currentQuestionIndex < questionsArray.length - 1) {
       currentQuestionIndex++;
-      if (currentQuestionIndex < questionsArray.length) {
-        renderQuestion();
-      } else {
-        showResults();
-      }
+      renderFlashcard();
     }
+  }
 
-    function showResults() {
-      const quizContainer = document.getElementById("quiz-main-container");
-      quizContainer.innerHTML = `<div class="title">Quiz Dyplomowy – Informatyka</div>
-                                 <div id="results">
-                                   <p>Twój wynik: ${score} na ${questionsArray.length} (${((score/questionsArray.length)*100).toFixed(2)}%)</p>
-                                 </div>
-                                 <button class="restart-btn" onclick="restartQuiz()">Rozpocznij od nowa</button>`;
+  // ========== WYBÓR ZAKRESU PYTAŃ ==========
+
+  function showRangeSelection() {
+    document.getElementById("menu").style.display = "none";
+    document.getElementById("range-container").style.display = "flex";
+    // Dziel na zakresy po 20 pytań + ostatni do końca (np. 121-130)
+    let total = questions.length;
+    let html = `<h3>Wybierz zakres pytań</h3>
+      <div class="category-list">
+        <label><input type="radio" name="range" value="all" checked> Wszystkie pytania (1-${total})</label>`;
+    let rangeStep = 20;
+    for (let i = 0; i < total; i += rangeStep) {
+      let start = i + 1;
+      let end = Math.min(i + rangeStep, total);
+      html += `<label><input type="radio" name="range" value="${start}-${end}"> Pytania ${start}-${end}</label>`;
     }
+    html += `
+      </div>
+      <button onclick="startExamWithRange()">Rozpocznij quiz z wybranego zakresu</button>
+      <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+    `;
+    document.getElementById("range-container").innerHTML = html;
+  }
 
-    function restartQuiz() {
-      currentQuestionIndex = 0;
-      score = 0;
-      allowClick = true;
-      questionsArray = shuffle([...questions]);
-      const quizContainer = document.getElementById("quiz-main-container");
-      quizContainer.innerHTML = `
-        <div class="title">Quiz Dyplomowy – Informatyka</div>
-        <div class="progress" id="progress"></div>
-        <div class="question" id="question">Ładowanie pytania...</div>
-        <div class="answers" id="answers"></div>
-        <button class="next-btn" id="next-button" onclick="nextQuestion()">Następne pytanie</button>
-      `;
-      renderQuestion();
+  function startExamWithRange() {
+    const radios = document.getElementsByName('range');
+    let value = "all";
+    for(let r of radios) { if(r.checked) value = r.value; }
+    let start=0, end=questions.length;
+    if (value !== "all") {
+      let [s,e] = value.split('-').map(x=>parseInt(x));
+      start = s-1; end = e;
     }
+    questionsArray = [...questions.slice(start, end)];
+    currentQuestionIndex = 0;
+    score = 0;
+    allowClick = true;
+    wrongQuestions = [];
+    rangeMode = true;
+    document.getElementById("range-container").style.display = "none";
+    const quiz = document.getElementById("quiz-main-container");
+    quiz.style.display = "flex";
+    quiz.innerHTML = `
+      <div class="title">Quiz Dyplomowy – Zakres: ${value==="all"?"Wszystkie pytania":value.replace("-","–")}</div>
+      <div class="progress" id="progress"></div>
+      <div class="question" id="question"></div>
+      <div class="answers" id="answers"></div>
+      <button class="next-btn" id="next-button" onclick="nextExamQuestionRange()">Następne pytanie</button>
+      <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+    `;
+    renderExamQuestionRange();
+  }
 
-    window.onload = () => {
-      questionsArray = shuffle([...questions]);
-      renderQuestion();
-    };
-  </script>
+  function renderExamQuestionRange() {
+    allowClick = true;
+    const questionData = questionsArray[currentQuestionIndex];
+    document.getElementById("question").innerText = questionData.question;
+    document.getElementById("progress").innerText = `Pytanie ${currentQuestionIndex + 1} z ${questionsArray.length}`;
+    const answersDiv = document.getElementById("answers");
+    answersDiv.innerHTML = '';
+
+    let allAnswers = [questionData.answer];
+    let indices = [...Array(questionsArray.length).keys()].filter(i => i !== currentQuestionIndex);
+    shuffle(indices);
+    for (let i = 0; i < 3 && i < indices.length; i++) {
+      allAnswers.push(questionsArray[indices[i]].answer);
+    }
+    allAnswers = shuffle(allAnswers);
+
+    allAnswers.forEach((ans, idx) => {
+      const btn = document.createElement("button");
+      btn.innerText = `${String.fromCharCode(65+idx)}. ${ans}`;
+      btn.onclick = () => {
+        if (!allowClick) return;
+        allowClick = false;
+        if (ans === questionData.answer) {
+          btn.classList.add("correct");
+          score++;
+        } else {
+          btn.classList.add("wrong");
+          wrongQuestions.push(questionData);
+          let btns = answersDiv.querySelectorAll("button");
+          btns.forEach(b => {
+            if (b.innerText.slice(3) === questionData.answer) b.classList.add("correct");
+          });
+        }
+      };
+      answersDiv.appendChild(btn);
+    });
+    document.getElementById("next-button").style.display = "block";
+  }
+
+  function nextExamQuestionRange() {
+    currentQuestionIndex++;
+    if (currentQuestionIndex < questionsArray.length) {
+      renderExamQuestionRange();
+    } else {
+      showExamResultsRange();
+    }
+  }
+
+  function showExamResultsRange() {
+    const quiz = document.getElementById("quiz-main-container");
+    quiz.innerHTML = `
+      <div class="title">Quiz Dyplomowy – Quiz z zakresu</div>
+      <div id="results">
+        <p>Twój wynik: ${score} z ${questionsArray.length} (${((score/questionsArray.length)*100).toFixed(1)}%)</p>
+        ${wrongQuestions.length > 0 ? `<button class="next-btn" onclick="repeatWrongQuestionsRange()">Powtórz błędne pytania (${wrongQuestions.length})</button>` : ""}
+      </div>
+      <button class="restart-btn" onclick="showRangeSelection()">Wybierz inny zakres</button>
+      <button class="back-btn" onclick="showMenu()">Powrót do menu</button>
+    `;
+  }
+
+  function repeatWrongQuestionsRange() {
+    if (wrongQuestions.length === 0) return;
+    questionsArray = shuffle([...wrongQuestions]);
+    wrongQuestions = [];
+    currentQuestionIndex = 0;
+    score = 0;
+    allowClick = true;
+    renderExamQuestionRange();
+  }
+
+  // ========== POMOCNICZE ==========
+
+  function shuffle(array) {
+    let currentIndex = array.length, randomIndex;
+    while (currentIndex !== 0) {
+      randomIndex = Math.floor(Math.random() * currentIndex);
+      currentIndex--;
+      [array[currentIndex], array[randomIndex]] = [
+        array[randomIndex], array[currentIndex]];
+    }
+    return array;
+  }
+
+  // ========== START ==========
+
+  showMenu();
+
+</script>
 </body>
 </html>
