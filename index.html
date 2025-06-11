@@ -5,6 +5,19 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
   <title>Quiz Dyplomowy – Informatyka</title>
   <link rel="stylesheet" href="style_mobile.css">
+  <script>
+    (function() {
+      const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+      const isTablet = /(ipad|tablet|(android(?!.*mobile))|(windows(?!.*phone)(.*touch))|kindle|playbook|silk|(puffin(?!.*(IP|AP|WP))))/i.test(navigator.userAgent);
+    
+      // Jeśli to nie jest smartfon/tablet => przekieruj na desktop.html
+      if (!isMobile && !isTablet) {
+        if (window.location.pathname.indexOf('desktop.html') === -1) {
+          window.location.href = 'desktop.html';
+        }
+      }
+    })();
+</script>
 </head>
 <body>
   <div id="menu" class="menu">
