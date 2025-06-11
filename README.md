@@ -78,13 +78,21 @@ Otwórz stronę [https://quiz-egazmin.netlify.app/](https://quiz-egazmin.netlify
 ## Struktura projektu
 
 ├── index.html # Strona główna – wersja mobilna
+
 ├── desktop.html # Wersja na komputery stacjonarne/laptopy
+
 ├── style_mobile.css # Style CSS dla wersji mobilnej
+
 ├── style_desktop.css # Style CSS dla wersji desktop
+
 ├── questions_formatted.js # Baza pytań i odpowiedzi (JSON/JS)
+
 ├── quiz-core.js # Główna logika quizu, wspólna dla obu widoków
+
 ├── desktop.js # Skrypt inicjujący widok desktopowy
+
 ├── mobile.js # Skrypt inicjujący widok mobilny
+
 
 
 **Dane quizu** możesz edytować w pliku `questions_formatted.js` (format: tablica obiektów `{question, answer}`).
