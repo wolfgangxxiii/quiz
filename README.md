@@ -1,152 +1,92 @@
-# Quiz do Egzaminu Dyplomowego – Informatyka
+<div align="center">
 
-Interaktywny quiz przygotowujący do egzaminu dyplomowego na kierunku Informatyka (specjalizacja: Aplikacje mobilne i bazy danych, WSB Merito Gdańsk).  
-Aplikacja pozwala efektywnie powtarzać materiał w kilku trybach, także na urządzeniach mobilnych.
+# 🎓 Quiz dyplomowy · Informatyka
 
-## Demo online
+**Ucz się do egzaminu dyplomowego w trybie testu, nauki i fiszek — także na telefonie.**
 
-Quiz dostępny jest online:  
-👉 [https://quiz-egazmin.netlify.app/](https://quiz-egazmin.netlify.app/)
+![HTML](https://img.shields.io/badge/HTML5-E34F26?style=flat-square&logo=html5&logoColor=white)
+![CSS](https://img.shields.io/badge/CSS3-1572B6?style=flat-square&logo=css&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=flat-square&logo=javascript&logoColor=black)
+![Offline](https://img.shields.io/badge/Tryb-offline-16A34A?style=flat-square)
+![License](https://img.shields.io/badge/Apache-2.0-16A34A?style=flat-square)
 
----
+### [🚀 Otwórz quiz online](https://quiz-egazmin.netlify.app/)
 
-## Spis treści
+[📚 Tryby](#-tryby-nauki) · [💻 Uruchomienie](#-uruchomienie-lokalne) · [📁 Pliki](#-struktura-projektu)
 
-- [Opis projektu](#opis-projektu)
-- [Technologie](#technologie)
-- [Jak korzystać](#jak-korzystać)
-  - [Uruchomienie online](#uruchomienie-online)
-  - [Uruchomienie lokalne](#uruchomienie-lokalne)
-- [Struktura projektu](#struktura-projektu)
-- [Funkcjonalności](#funkcjonalności)
-- [Wkład własny i rozwój](#wkład-własny-i-rozwój)
-- [FAQ](#faq)
-- [Autor](#autor)
+</div>
 
 ---
 
-## Opis projektu
+## 💡 Dla kogo?
 
-Aplikacja pozwala powtarzać zagadnienia z informatyki (m.in. bazy danych, programowanie, bezpieczeństwo, algorytmy, aplikacje mobilne) w formie:
+Aplikacja wspiera przygotowanie do egzaminu dyplomowego z **informatyki** (specjalność: **Aplikacje mobilne i bazy danych**, WSB Merito Gdańsk). Zagadnienia obejmują m.in. programowanie, bazy danych, algorytmy, bezpieczeństwo i aplikacje mobilne.
 
-- **Quizu egzaminacyjnego** – 20 losowych pytań z odpowiedziami wielokrotnego wyboru,
-- **Trybu nauki** – przechodzenie przez wszystkie pytania wraz z podpowiedziami,
-- **Fiszki** – powtórka całego zakresu pytań w formie pytanie-odpowiedź,
-- **Quizów i fiszek z wybranego zakresu** – możesz wybrać tylko fragment bazy pytań,
-- **Podsumowania wyników** – z opcją powtórki błędnych pytań.
+## 📚 Tryby nauki
 
-Aplikacja działa zarówno na **desktopie**, jak i **smartfonach/tabletach** – wyświetla optymalny interfejs w zależności od urządzenia.
+| 🎯 Tryb | 📖 Jak działa |
+| :--- | :--- |
+| **Egzamin** | 20 losowych pytań, wybór odpowiedzi, wynik procentowy na końcu |
+| **Nauka** | Przechodzenie przez pulę pytań z natychmiastową informacją o odpowiedzi |
+| **Fiszki** | Przeglądanie pytań i odpowiedzi jedna po drugiej |
+| **Wybrany zakres** | Quiz i fiszki dla określonych przedziałów pytań |
+| **Powtórka błędów** | Ponowne przejście przez pytania, na które odpowiedziano błędnie |
 
----
+Interfejs ma osobne widoki **mobilny i desktopowy**. Całość działa po stronie przeglądarki — nie wymaga konta ani serwera aplikacyjnego.
 
-## Technologie
+## 💻 Uruchomienie lokalne
 
-Projekt został stworzony z wykorzystaniem:
+~~~bash
+git clone https://github.com/wolfgangxxiii/quiz.git
+cd quiz
+~~~
 
-- **JavaScript** (logika quizu, obsługa widoków i pytań)
-- **HTML** (struktura aplikacji)
-- **CSS** (wygląd i responsywność – oddzielne style dla desktop/mobile)
+Otwórz `index.html` w przeglądarce. Możesz także bezpośrednio otworzyć `desktop.html`, aby skorzystać z widoku komputerowego.
 
----
+> Po pobraniu plików quiz może działać **bez dostępu do internetu**. Nie potrzebujesz instalować zależności ani uruchamiać backendu.
 
-## Jak korzystać
+## 📁 Struktura projektu
 
-### Uruchomienie online
+| Plik | Zastosowanie |
+| :--- | :--- |
+| [`index.html`](index.html) | Główny punkt wejścia i widok mobilny |
+| [`desktop.html`](desktop.html) | Układ desktopowy |
+| [`quiz-core.js`](quiz-core.js) | Wspólna logika quizów i fiszek |
+| [`questions_formatted.js`](questions_formatted.js) | Baza pytań i odpowiedzi |
+| [`mobile.js`](mobile.js), [`desktop.js`](desktop.js) | Obsługa interfejsów |
+| [`style_mobile.css`](style_mobile.css), [`style_desktop.css`](style_desktop.css) | Stylizacja obu wersji |
 
-Najprościej:  
-Otwórz stronę [https://quiz-egazmin.netlify.app/](https://quiz-egazmin.netlify.app/) i korzystaj od razu w przeglądarce (nie wymaga instalacji).
+### ✏️ Własne pytania
 
-### Uruchomienie lokalne
+Dane zapisane są w `questions_formatted.js` jako obiekty zawierające pola `question` i `answer`. Możesz edytować tę bazę, zachowując istniejący format.
 
-1. **Sklonuj repozytorium**:
-    ```sh
-    git clone https://github.com/wolfgangxxiii/quiz.git
-    ```
-2. **Wejdź do katalogu z projektem**:
-    ```sh
-    cd quiz
-    ```
-3. **Uruchom plik**  
-   Otwórz plik `index.html` **w przeglądarce internetowej** (np. przeciągnij plik na okno Chrome/Edge/Firefox).
+## ❓ FAQ
 
-**Uwaga:**  
-- Nie jest wymagany żaden serwer, backend, ani instalacja bibliotek – wystarczy przeglądarka!
-- Quiz automatycznie wykrywa, czy korzystasz z komputera czy smartfona/tabletu i uruchamia odpowiedni widok.
+<details>
+<summary><strong>Czy quiz działa na smartfonie?</strong></summary>
 
----
+Tak, interfejs rozróżnia widok mobilny i komputerowy.
 
-## Struktura projektu
+</details>
 
-├── index.html # Strona główna – wersja mobilna
+<details>
+<summary><strong>Czy potrzebuję konta albo internetu?</strong></summary>
 
-├── desktop.html # Wersja na komputery stacjonarne/laptopy
+Nie. Do lokalnego używania wystarczą pobrane pliki i przeglądarka.
 
-├── style_mobile.css # Style CSS dla wersji mobilnej
+</details>
 
-├── style_desktop.css # Style CSS dla wersji desktop
+<details>
+<summary><strong>Czy można ćwiczyć tylko część materiału?</strong></summary>
 
-├── questions_formatted.js # Baza pytań i odpowiedzi (JSON/JS)
+Tak. W menu dostępny jest wybór zakresu pytań dla quizu i fiszek.
 
-├── quiz-core.js # Główna logika quizu, wspólna dla obu widoków
+</details>
 
-├── desktop.js # Skrypt inicjujący widok desktopowy
+## 👤 Autor i licencja
 
-├── mobile.js # Skrypt inicjujący widok mobilny
+**Szymon Piotr Bławat** · Informatyka, WSB Merito Gdańsk.
 
+[Apache License 2.0](LICENSE.txt) · [Zgłoś błąd lub pomysł](https://github.com/wolfgangxxiii/quiz/issues)
 
-
-**Dane quizu** możesz edytować w pliku `questions_formatted.js` (format: tablica obiektów `{question, answer}`).
-
----
-
-## Funkcjonalności
-
-- Quiz 20 losowych pytań (wielokrotnego wyboru)
-- Tryb nauki – bez presji czasu, wszystkie pytania po kolei
-- Tryb fiszek – szybkie powtarzanie (pytanie i odpowiedź)
-- Wybór zakresu pytań (np. 1-20, 21-40)
-- Możliwość powtarzania tylko błędnych pytań
-- Automatyczne dostosowanie wyglądu do urządzenia (mobile/desktop)
-- Tryb ciemny (jeśli masz włączony dark mode w systemie/przeglądarce)
-- Lekka, szybka aplikacja, działa offline (możesz pobrać i używać bez internetu)
-- Przejrzysty kod, łatwy do modyfikacji
-
----
-
-## Wkład własny i rozwój
-
-Chcesz zgłosić błąd lub rozwinąć projekt?  
-- Załóż **issue** na GitHubie  
-- Stwórz **pull request** z nową funkcją lub poprawką  
-- Pomysły na kolejne tryby/usprawnienia są mile widziane!
-
----
-
-## FAQ
-
-**1. Czy aplikacja działa na telefonie?**  
-Tak! Quiz automatycznie uruchamia się w wersji mobilnej na smartfonach/tabletach.
-
-**2. Nie mam serwera, czy muszę coś instalować?**  
-Nie. Wystarczy otworzyć `index.html` (na telefonie) lub `desktop.html` (na komputerze).
-
-**3. Jak dodać własne pytania/odpowiedzi?**  
-Edytuj plik `questions_formatted.js` – każdy wpis to jeden obiekt `{question: "...", answer: "..."}`.
-
-**4. Czy mogę użyć quizu do własnych celów edukacyjnych?**  
-Tak, repozytorium jest otwarte – możesz korzystać i rozwijać quiz do woli!
-
----
-
-## Autor
-
-**Szymon Piotr BŁAWAT**  
-- [gdx161056@student.gdansk.merito.pl](mailto:gdx161056@student.gdansk.merito.pl)  
-- [szymon.bawat@gmail.com](mailto:szymon.bawat@gmail.com)  
-- [GitHub: wolfgangxxiii/quiz](https://github.com/wolfgangxxiii/quiz)  
-- Wyższa Szkoła Bankowa Merito Gdańsk, kierunek Informatyka  
-- Specjalizacja: Aplikacje mobilne i bazy danych
-
----
-
-**Miłej nauki i powodzenia na egzaminie! 🎓**
+<div align="center"><sub>Powodzenia na egzaminie! 🎓</sub></div>
